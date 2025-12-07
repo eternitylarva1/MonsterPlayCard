@@ -17,7 +17,7 @@ public class MonsterSkillCard2 extends AbstractMonsterCard {
     public MonsterSkillCard2() {
         super("EveryMonsterPlayCard:MonsterSkillCard2", cardStrings.NAME, "green/skill/blur", 1, cardStrings.DESCRIPTION, 
               AbstractCard.CardType.SKILL, AbstractCard.CardColor.GREEN, AbstractCard.CardRarity.UNCOMMON, AbstractCard.CardTarget.SELF);
-        this.baseBlock = 5;
+        this.baseBlock=this.block = 5;
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {

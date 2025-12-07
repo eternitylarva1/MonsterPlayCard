@@ -17,7 +17,7 @@ public class MonsterSkillCard1 extends AbstractMonsterCard {
     public MonsterSkillCard1() {
         super("EveryMonsterPlayCard:MonsterSkillCard1", cardStrings.NAME, "red/skill/defend", 1, cardStrings.DESCRIPTION,
               AbstractCard.CardType.SKILL, AbstractCard.CardColor.RED, AbstractCard.CardRarity.BASIC, AbstractCard.CardTarget.SELF);
-        this.baseBlock = 5;
+        this.baseBlock=this.block = 5;
         this.tags.add(AbstractCard.CardTags.STARTER_DEFEND);
     }
 

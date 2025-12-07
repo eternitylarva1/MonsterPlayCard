@@ -369,6 +369,7 @@ public class MonsterCardPlayer {
 
                     // 更新卡牌状态
                     card.update();
+                    card.applyPowers();
                 }
             }
         }
