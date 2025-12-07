@@ -13,3 +13,5 @@
 不要简化处理：原版的calculateCardDamage方法是闭环的，考虑了所有power类型，应该保持完整性
 
 理解角色关系：怪物卡牌是怪物出的，atDamageGive应该看怪物的powers，不要搞混角色
+
+applyPowers()问题：applyPowers()是无参数方法，不知道使用哪个怪物的powers。解决方案：给怪物卡牌添加owningMonster字段，在调用前设置
