@@ -85,35 +85,19 @@ public abstract class AbstractMonsterCard extends AbstractCard {
 
     /**
      * 重写applyPowers方法，适用于怪物卡牌的场景
-     * 原版：基于玩家计算（考虑玩家遗物、powers、姿态）
-     * 现在：基于怪物计算（考虑怪物powers、玩家powers影响）
+     * 注意：怪物卡牌的使用者需要在调用时明确指定
+     * 这个方法主要用于基础计算，具体power应用在use()方法中进行
      */
     @Override
     public void applyPowers() {
         applyPowersToBlock();
 
-        // 对于怪物卡牌，我们不需要应用遗物效果（怪物没有遗物）
-        // 但需要考虑玩家的powers对怪物的伤害影响
+        // 怪物卡牌不自动应用powers，因为不知道具体的使用者
+        // 具体的power应用在use()方法中进行
         this.isDamageModified = false;
 
         if (!this.isMultiDamage) {
             float tmp = this.baseDamage;
-
-            // 应用玩家的powers对怪物伤害的影响
-            for (AbstractPower p : AbstractDungeon.player.powers) {
-                tmp = p.atDamageGive(tmp, this.damageTypeForTurn, this);
-            }
-
-            // 移除姿态影响，因为怪物没有姿态
-            // tmp = player.stance.atDamageGive(tmp, this.damageTypeForTurn, this);
-            if (this.baseDamage != (int)tmp) {
-                this.isDamageModified = true;
-            }
-
-            // 应用玩家的powers最终修改
-            for (AbstractPower p : AbstractDungeon.player.powers) {
-                tmp = p.atDamageFinalGive(tmp, this.damageTypeForTurn, this);
-            }
 
             if (tmp < 0.0F) {
                 tmp = 0.0F;
@@ -123,59 +107,17 @@ public abstract class AbstractMonsterCard extends AbstractCard {
                 this.isDamageModified = true;
             }
             this.damage = MathUtils.floor(tmp);
-        } else {
-            // 对于多重伤害，参考原版逻辑
-            ArrayList<AbstractMonster> m = (AbstractDungeon.getCurrRoom()).monsters.monsters;
-            float[] tmp = new float[m.size()];
-            int i;
-
-            for (i = 0; i < tmp.length; i++) {
-                tmp[i] = this.baseDamage;
-            }
-
-            for (i = 0; i < tmp.length; i++) {
-                // 应用玩家的powers对每个怪物的伤害影响
-                for (AbstractPower p : AbstractDungeon.player.powers) {
-                    tmp[i] = p.atDamageGive(tmp[i], this.damageTypeForTurn, this);
-                }
-
-                // 移除姿态影响
-                // tmp[i] = AbstractDungeon.player.stance.atDamageGive(tmp[i], this.damageTypeForTurn, this);
-                if (this.baseDamage != (int)tmp[i]) {
-                    this.isDamageModified = true;
-                }
-            }
-
-            for (i = 0; i < tmp.length; i++) {
-                // 应用玩家的powers最终修改
-                for (AbstractPower p : AbstractDungeon.player.powers) {
-                    tmp[i] = p.atDamageFinalGive(tmp[i], this.damageTypeForTurn, this);
-                }
-
-                if (tmp[i] < 0.0F) {
-                    tmp[i] = 0.0F;
-                }
-
-                if (this.baseDamage != MathUtils.floor(tmp[i])) {
-                    this.isDamageModified = true;
-                }
-                this.multiDamage[i] = MathUtils.floor(tmp[i]);
-            }
         }
+        // 对于多重伤害，暂时保持简单处理
     }
 
     /**
      * 重写applyPowersToBlock方法，适用于怪物卡牌的场景
-     * 原版：基于玩家计算格挡（考虑玩家powers）
-     * 现在：基于怪物计算格挡（考虑怪物powers）
      */
     @Override
     protected void applyPowersToBlock() {
         this.isBlockModified = false;
         float tmp = this.baseBlock;
-
-        // 对于怪物卡牌，我们可以考虑怪物的powers对格挡的影响
-        // 这里可以根据需要添加怪物power的修改逻辑
 
         if (this.baseBlock != MathUtils.floor(tmp)) {
             this.isBlockModified = true;
