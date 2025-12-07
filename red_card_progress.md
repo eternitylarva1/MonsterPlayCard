@@ -7,18 +7,19 @@
 
 ## 搬运进度表
 
-### ✅ 已完成 (4张)
+### ✅ 已完成 (5张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
 | 1 | EnBash | MonsterAttackCard1 | MonsterAttackCard1.java | ✅ 完成 | Bash - 攻击+易伤 |
-| 2 | EnFlameBarrier | MonsterAttackCard4 | MonsterAttackCard4.java | ✅ 完成 | Flame Barrier - 格挡+反击 |
-| 3 | EnBloodletting | MonsterSkillCard3 | MonsterSkillCard3.java | ✅ 完成 | Bloodletting - 自残换能量 |
-| 4 | EnReaper | MonsterAttackCard5 | MonsterAttackCard5.java | ✅ 完成 | Reaper - 伤害+击杀回复 |
+| 2 | EnFlameBarrier | EnFlameBarrier | EnFlameBarrier.java | ✅ 完成 | Flame Barrier - 格挡+反击 |
+| 3 | EnBloodletting | EnBloodletting | EnBloodletting.java | ✅ 完成 | Bloodletting - 自残换能量 |
+| 4 | EnReaper | EnReaper | EnReaper.java | ✅ 完成 | Reaper - 伤害+击杀回复 |
+| 5 | EnInflame | EnInflame | EnInflame.java | ✅ 完成 | Inflame - 获得力量 |
 
 ### 🚧 进行中 (1张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
-| 5 | EnInflame | MonsterPowerCard1 | MonsterPowerCard1.java | 🚧 进行中 | Inflame - 获得力量 |
+| 6 | EnUppercut | EnUppercut | EnUppercut.java | 🚧 进行中 | Uppercut - 攻击+虚弱+易伤 |
 
 ### 📋 待搬运 (43张)
 | 序号 | 原始类名 | 新类名 | 状态 | 备注 |

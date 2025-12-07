@@ -18,13 +18,13 @@ import com.megacrit.cardcrawl.powers.WeakPower;
  * 上勾拳 - 怪物版
  * 造成伤害并施加虚弱和易伤，是复合减益效果的典型攻击卡牌
  */
-public class MonsterAttackCard6 extends AbstractMonsterCard {
+public class EnUppercut extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Uppercut");
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard6";
+    public static final String ID = "EveryMonsterPlayCard:EnUppercut";
 
-    public MonsterAttackCard6() {
-        super("EveryMonsterPlayCard:MonsterAttackCard6", cardStrings.NAME, "red/attack/uppercut", 2, cardStrings.DESCRIPTION,
+    public EnUppercut() {
+        super("EveryMonsterPlayCard:EnUppercut", cardStrings.NAME, "red/attack/uppercut", 2, cardStrings.DESCRIPTION,
               CardType.ATTACK, CardColor.RED, CardRarity.UNCOMMON, CardTarget.ENEMY);
 
         this.baseDamage = 13;
@@ -59,6 +59,6 @@ public class MonsterAttackCard6 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard6();
+        return new EnUppercut();
     }
 }

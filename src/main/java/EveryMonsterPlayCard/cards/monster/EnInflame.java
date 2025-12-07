@@ -18,13 +18,13 @@ import com.megacrit.cardcrawl.vfx.combat.InflameEffect;
  * 激励 - 怪物版
  * 获得力量，是典型的强化类能力卡牌
  */
-public class MonsterPowerCard1 extends AbstractMonsterCard {
+public class EnInflame extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Inflame");
-    public static final String ID = "EveryMonsterPlayCard:MonsterPowerCard1";
+    public static final String ID = "EveryMonsterPlayCard:EnInflame";
 
-    public MonsterPowerCard1() {
-        super("EveryMonsterPlayCard:MonsterPowerCard1", cardStrings.NAME, "red/power/inflame", 1, cardStrings.DESCRIPTION,
+    public EnInflame() {
+        super("EveryMonsterPlayCard:EnInflame", cardStrings.NAME, "red/power/inflame", 1, cardStrings.DESCRIPTION,
               CardType.POWER, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseMagicNumber = 2;
@@ -53,6 +53,6 @@ public class MonsterPowerCard1 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterPowerCard1();
+        return new EnInflame();
     }
 }
