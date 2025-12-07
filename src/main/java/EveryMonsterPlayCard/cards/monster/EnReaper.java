@@ -21,13 +21,13 @@ import com.megacrit.cardcrawl.powers.StrengthPower;
  * 对所有敌人造成伤害，击杀敌人时获得力量
  * 包含生命吸取效果：造成伤害时回复等量生命值
  */
-public class MonsterAttackCard5 extends AbstractMonsterCard {
+public class EnReaper extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Reaper");
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard5";
+    public static final String ID = "EveryMonsterPlayCard:EnReaper";
 
-    public MonsterAttackCard5() {
-        super("EveryMonsterPlayCard:MonsterAttackCard5", cardStrings.NAME, "red/attack/reaper", 2, cardStrings.DESCRIPTION,
+    public EnReaper() {
+        super("EveryMonsterPlayCard:EnReaper", cardStrings.NAME, "red/attack/reaper", 2, cardStrings.DESCRIPTION,
               CardType.ATTACK, CardColor.RED, CardRarity.RARE, CardTarget.ALL_ENEMY);
 
         this.baseDamage = 4;
@@ -62,6 +62,6 @@ public class MonsterAttackCard5 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard5();
+        return new EnReaper();
     }
 }

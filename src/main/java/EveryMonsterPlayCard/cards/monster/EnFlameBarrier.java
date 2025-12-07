@@ -20,13 +20,13 @@ import com.megacrit.cardcrawl.vfx.combat.FlameBarrierEffect;
  * 火焰壁垒 - 怪物版
  * 获得格挡，反击敌人造成等于格挡值的伤害
  */
-public class MonsterAttackCard4 extends AbstractMonsterCard {
+public class EnFlameBarrier extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Flame Barrier");
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard4";
+    public static final String ID = "EveryMonsterPlayCard:EnFlameBarrier";
 
-    public MonsterAttackCard4() {
-        super("EveryMonsterPlayCard:MonsterAttackCard4", cardStrings.NAME, "red/skill/flame_barrier", 2, cardStrings.DESCRIPTION,
+    public EnFlameBarrier() {
+        super("EveryMonsterPlayCard:EnFlameBarrier", cardStrings.NAME, "red/skill/flame_barrier", 2, cardStrings.DESCRIPTION,
               CardType.SKILL, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseBlock = 12;
@@ -54,6 +54,6 @@ public class MonsterAttackCard4 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard4();
+        return new EnFlameBarrier();
     }
 }

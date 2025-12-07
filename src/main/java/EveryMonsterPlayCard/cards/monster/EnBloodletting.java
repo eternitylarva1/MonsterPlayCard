@@ -15,13 +15,13 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
  * 放血 - 怪物版
  * 自残换取能量，典型的力量型交换机制
  */
-public class MonsterSkillCard3 extends AbstractMonsterCard {
+public class EnBloodletting extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Bloodletting");
-    public static final String ID = "EveryMonsterPlayCard:MonsterSkillCard3";
+    public static final String ID = "EveryMonsterPlayCard:EnBloodletting";
 
-    public MonsterSkillCard3() {
-        super("EveryMonsterPlayCard:MonsterSkillCard3", cardStrings.NAME, "red/skill/bloodletting", 0, cardStrings.DESCRIPTION,
+    public EnBloodletting() {
+        super("EveryMonsterPlayCard:EnBloodletting", cardStrings.NAME, "red/skill/bloodletting", 0, cardStrings.DESCRIPTION,
               CardType.SKILL, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseMagicNumber = 2;
@@ -48,6 +48,6 @@ public class MonsterSkillCard3 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterSkillCard3();
+        return new EnBloodletting();
     }
 }
