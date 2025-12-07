@@ -13,8 +13,12 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard1;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard2;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard3;
+import EveryMonsterPlayCard.cards.monster.MonsterAttackCard4;
+import EveryMonsterPlayCard.cards.monster.MonsterAttackCard5;
+import EveryMonsterPlayCard.cards.monster.MonsterAttackCard6;
 import EveryMonsterPlayCard.cards.monster.MonsterSkillCard1;
 import EveryMonsterPlayCard.cards.monster.MonsterSkillCard2;
+import EveryMonsterPlayCard.cards.monster.MonsterSkillCard3;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,11 +65,23 @@ public class MonsterCardConfig {
         // 3. MonsterAttackCard3 - 绿色攻击卡 (0费，11伤害，内在，消耗)
         universalMonsterCards.add(new MonsterAttackCard3());
 
-        // 4. MonsterSkillCard1 - 蓝色技能卡 (1费，11格挡，如果当前无格挡)
+        // 4. MonsterAttackCard4 - 红色攻击卡 (2费，20伤害，内在)
+        universalMonsterCards.add(new MonsterAttackCard4());
+
+        // 5. MonsterAttackCard5 - 红色攻击卡 (1费，8伤害，全体)
+        universalMonsterCards.add(new MonsterAttackCard5());
+
+        // 6. MonsterAttackCard6 - 红色攻击卡 (2费，12伤害+虚弱)
+        universalMonsterCards.add(new MonsterAttackCard6());
+
+        // 7. MonsterSkillCard1 - 蓝色技能卡 (1费，11格挡，如果当前无格挡)
         universalMonsterCards.add(new MonsterSkillCard1());
 
-        // 5. MonsterSkillCard2 - 绿色技能卡 (1费，5格挡)
+        // 8. MonsterSkillCard2 - 绿色技能卡 (1费，5格挡)
         universalMonsterCards.add(new MonsterSkillCard2());
+
+        // 9. MonsterSkillCard3 - 红色技能卡 (1费，5格挡)
+        universalMonsterCards.add(new MonsterSkillCard3());
 
         // 清理掉null值，确保只添加有效的卡牌
         universalMonsterCards.removeIf(card -> card == null);

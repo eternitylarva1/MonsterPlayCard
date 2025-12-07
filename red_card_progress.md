@@ -7,7 +7,7 @@
 
 ## 搬运进度表
 
-### ✅ 已完成 (9张)
+### ✅ 已完成 (14张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
 | 1 | EnBash | MonsterAttackCard1 | MonsterAttackCard1.java | ✅ 完成 | Bash - 攻击+易伤 |
@@ -19,20 +19,20 @@
 | 7 | EnAnger | EnAnger | EnAnger.java | ✅ 完成 | Anger - 伤害+愤怒机制 |
 | 8 | EnArmaments | EnArmaments | EnArmaments.java | ✅ 完成 | Armaments - 获得格挡 |
 | 9 | EnBarricade | EnBarricade | EnBarricade.java | ✅ 完成 | Barricade - 路障力量 |
+| 10 | EnCarnage | MonsterAttackCard4 | MonsterAttackCard4.java | ✅ 完成 | Carnage - 2费20伤害，内在 |
+| 11 | EnCleave | MonsterAttackCard5 | MonsterAttackCard5.java | ✅ 完成 | Cleave - 1费8伤害，全体 |
+| 12 | EnClothesline | MonsterAttackCard6 | MonsterAttackCard6.java | ✅ 完成 | Clothesline - 2费12伤害+虚弱 |
+| 13 | EnDefendRed | MonsterSkillCard3 | MonsterSkillCard3.java | ✅ 完成 | Defend_R - 1费5格挡 |
+| 14 | EnBodySlam | MonsterAttackCard2 | MonsterAttackCard2.java | ✅ 完成 | BodySlam - 基于格挡造成伤害 |
 
 ### 🚧 进行中 (0张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
 | - | - | - | - | - | - |
 
-### 📋 待搬运 (39张)
+### 📋 待搬运 (35张)
 | 序号 | 原始类名 | 新类名 | 状态 | 备注 |
 |------|----------|--------|------|------|
-| 10 | EnBodySlam | MonsterAttackCard7 | 📋 待搬运 | 身体冲撞 - 基于格挡造成伤害 |
-| 11 | EnCarnage | MonsterAttackCard8 | 📋 待搬运 | 残杀 - 高伤害攻击 |
-| 12 | EnCleave | MonsterAttackCard9 | 📋 待搬运 | 横扫 - 全体伤害 |
-| 13 | EnClothesline | MonsterAttackCard10 | 📋 待搬运 | 衣袖击 - 攻击+虚弱 |
-| 14 | EnDefendRed | MonsterSkillCard6 | 📋 待搬运 | 红色防御 - 格挡 |
 | 15 | EnDemonForm | MonsterPowerCard4 | 📋 待搬运 | 恶魔形态 - 力量持续增长 |
 | 16 | EnDisarm | MonsterSkillCard7 | 📋 待搬运 | 缴械 - 移除力量 |
 | 17 | EnDoubleTap | MonsterAttackCard11 | 📋 待搬运 | 双击 - 攻击两次 |
