@@ -8,6 +8,7 @@ import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.AbstractPower;
@@ -56,12 +57,12 @@ public abstract class AbstractMonsterCard extends AbstractCard {
             }
 
             // 应用怪物的伤害接收修改
-            for (AbstractPower p : m.powers) {
+            for (AbstractPower p : AbstractDungeon.player.powers) {
                 tmp = p.atDamageReceive(tmp, this.damageTypeForTurn, this);
             }
 
             // 应用最终修改
-            for (AbstractPower p : m.powers) {
+            for (AbstractPower p : AbstractDungeon.player.powers) {
                 tmp = p.atDamageFinalReceive(tmp, this.damageTypeForTurn, this);
             }
 
