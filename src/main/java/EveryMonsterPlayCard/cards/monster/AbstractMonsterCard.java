@@ -23,6 +23,9 @@ public abstract class AbstractMonsterCard extends AbstractCard {
 
     protected CardStrings cardStrings;
 
+    // 存储使用此卡牌的怪物引用，用于applyPowers计算
+    protected AbstractMonster owningMonster;
+
     public AbstractMonsterCard(String id, String name, String img, int cost, String rawDescription,
                               CardType type, CardColor color, CardRarity rarity, CardTarget target) {
         super(id, name, img, cost, rawDescription, type, color, rarity, target);
@@ -38,6 +41,20 @@ public abstract class AbstractMonsterCard extends AbstractCard {
 
     public boolean canUse(AbstractPlayer p, AbstractMonster m) {
         return true;
+    }
+
+    /**
+     * 设置使用此卡牌的怪物
+     */
+    public void setOwningMonster(AbstractMonster monster) {
+        this.owningMonster = monster;
+    }
+
+    /**
+     * 获取使用此卡牌的怪物
+     */
+    public AbstractMonster getOwningMonster() {
+        return this.owningMonster;
     }
 
     /**
@@ -85,19 +102,33 @@ public abstract class AbstractMonsterCard extends AbstractCard {
 
     /**
      * 重写applyPowers方法，适用于怪物卡牌的场景
-     * 注意：怪物卡牌的使用者需要在调用时明确指定
-     * 这个方法主要用于基础计算，具体power应用在use()方法中进行
+     * 遵循角色关系：怪物卡牌是怪物出的，atDamageGive看怪物的powers
      */
     @Override
     public void applyPowers() {
         applyPowersToBlock();
 
-        // 怪物卡牌不自动应用powers，因为不知道具体的使用者
-        // 具体的power应用在use()方法中进行
         this.isDamageModified = false;
 
         if (!this.isMultiDamage) {
             float tmp = this.baseDamage;
+
+            // 应用怪物的powers对伤害的影响（遵循角色关系）
+            if (this.owningMonster != null) {
+                for (AbstractPower p : this.owningMonster.powers) {
+                    tmp = p.atDamageGive(tmp, this.damageTypeForTurn, this);
+                }
+            }
+
+            // 应用玩家的powers对怪物伤害的接收影响
+            for (AbstractPower p : AbstractDungeon.player.powers) {
+                tmp = p.atDamageReceive(tmp, this.damageTypeForTurn, this);
+            }
+
+            // 应用玩家的powers最终修改
+            for (AbstractPower p : AbstractDungeon.player.powers) {
+                tmp = p.atDamageFinalReceive(tmp, this.damageTypeForTurn, this);
+            }
 
             if (tmp < 0.0F) {
                 tmp = 0.0F;
@@ -108,7 +139,7 @@ public abstract class AbstractMonsterCard extends AbstractCard {
             }
             this.damage = MathUtils.floor(tmp);
         }
-        // 对于多重伤害，暂时保持简单处理
+        // TODO: 对于多重伤害，未来可以实现完整逻辑
     }
 
     /**

@@ -282,6 +282,11 @@ public class MonsterCardPlayer {
                 return;
             }
 
+            // 在调用卡牌之前，设置卡牌的拥有者怪物
+            if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
+            }
+
             // 直接调用卡牌的use方法
             card.use(targetPlayer, monster);
 
