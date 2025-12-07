@@ -1,0 +1,8 @@
+{
+  "everyMonsterPlayCard:MonsterCardPower": {
+    "NAME": "Monster Cards",
+    "DESCRIPTIONS": [
+      "Monsters can play cards during combat."
+    ]
+  }
+}

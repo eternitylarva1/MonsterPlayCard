@@ -1,0 +1,13 @@
+这是一个游戏的mod文件。大部分功能的实现都在游戏本体中。游戏本体代码在.SlayTheSpireLibrary文件夹，大部分代码都可以在这里找到
+
+如果你在这个项目中搜索不到相关的代码，请你尝试反编译来寻找。如果还是找不到，请你询问我，而不是自己瞎搞
+
+教程在.SlayTheSpireLibrary/SlayTheSpireModTutorials-master/Tutorials/ 里面，如果如果要使用新的东西先看看这个教程里面有没有。你可以使用bash查看这个目录的结构。
+
+在正式开始编辑之前，一定要阅读.SlayTheSpireLibrary文件夹中的教程中。还有遵循rules.md里面的规则
+
+禁止使用rm -rf这种危险的指令。不需要的类请你注释掉
+
+在重写任何方法前，必须先仔细研究原版实现，不要想当然
+
+不要简化处理：原版的calculateCardDamage方法是闭环的，考虑了所有power类型，应该保持完整性

@@ -1,0 +1,8 @@
+{
+  "everyMonsterPlayCard:MonsterCardPower": {
+    "NAME": "怪物卡牌",
+    "DESCRIPTIONS": [
+      "怪物在战斗中可以出牌。"
+    ]
+  }
+}
