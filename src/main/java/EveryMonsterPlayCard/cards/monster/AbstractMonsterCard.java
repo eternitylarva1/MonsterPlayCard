@@ -82,4 +82,58 @@ public abstract class AbstractMonsterCard extends AbstractCard {
     public abstract void use(AbstractPlayer p, AbstractMonster m);
 
     public abstract AbstractCard makeCopy();
+
+    /**
+     * 重写applyPowers方法，适用于怪物卡牌的场景
+     * 原版：基于玩家计算
+     * 现在：基于怪物计算
+     */
+    @Override
+    public void applyPowers() {
+        applyPowersToBlock();
+
+        // 对于怪物卡牌，我们不需要应用遗物效果
+        // 只需要应用powers的影响
+        this.isDamageModified = false;
+
+        if (!this.isMultiDamage) {
+            float tmp = this.baseDamage;
+
+            // 对于怪物卡牌，可以根据需要添加特殊的power处理逻辑
+            // 这里可以根据怪物的特殊属性来调整伤害
+
+            if (tmp < 0.0F) {
+                tmp = 0.0F;
+            }
+
+            if (this.baseDamage != MathUtils.floor(tmp)) {
+                this.isDamageModified = true;
+            }
+            this.damage = MathUtils.floor(tmp);
+        }
+        // TODO: 如果需要支持多重伤害，可以在这里添加相应的逻辑
+    }
+
+    /**
+     * 重写applyPowersToBlock方法，适用于怪物卡牌的场景
+     * 原版：基于玩家计算格挡
+     * 现在：基于怪物计算格挡
+     */
+    @Override
+    protected void applyPowersToBlock() {
+        this.isBlockModified = false;
+        float tmp = this.baseBlock;
+
+        // 对于怪物卡牌，可以根据需要添加特殊的power处理逻辑
+        // 这里可以根据怪物的特殊属性来调整格挡
+
+        if (this.baseBlock != MathUtils.floor(tmp)) {
+            this.isBlockModified = true;
+        }
+
+        if (tmp < 0.0F) {
+            tmp = 0.0F;
+        }
+        this.block = MathUtils.floor(tmp);
+    }
 }
