@@ -81,12 +81,46 @@ public class CardBox {
     private void applyHoverEffect(AbstractCard card, boolean isHovered) {
         if (isHovered) {
             // 悬停时放大并设置为完全不透明
-            card.targetDrawScale = SHOW_SCALE * 1.2f;  // 放大120%
+            card.targetDrawScale = SHOW_SCALE * 1.3f;  // 增强放大效果到130%
             CardShowChange.setCardFullyVisible(card);
+            card.drawScale = card.targetDrawScale;     // 强制立即更新缩放
         } else {
             // 非悬停时恢复正常大小和半透明
             card.targetDrawScale = SHOW_SCALE;
             CardShowChange.setCardSemiTransparent(card);
+        }
+            card.drawScale = card.targetDrawScale;     // 强制立即更新缩放
+    }
+
+    /**
+     * 在每次渲染前更新所有卡牌的位置
+     */
+    public void update() {
+        // 频繁更新位置以跟随怪物移动
+        updateCardPositions();
+
+        // 更新所有显示卡牌的位置
+        if (shownCards != null) {
+            int xOffset = getXOffsetById(shownCards.cardList.size() - 1);
+
+            // 更新已出卡牌的位置
+            for (AbstractCard card : shownCards.cardList) {
+                if (card != null) {
+                    card.target_x = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                    card.target_y = yCenter;
+                    xOffset++;
+                }
+            }
+
+            // 更新即将抽到的卡牌位置
+            int drawOffset = getXOffsetById(shownCards.cardList.size() + shownCards.drawingCards.size() - 1);
+            for (AbstractCard card : shownCards.drawingCards) {
+                if (card != null) {
+                    card.target_x = xCenter + drawOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                    card.target_y = yCenter;
+                    drawOffset++;
+                }
+            }
         }
     }
 
@@ -96,8 +130,8 @@ public class CardBox {
         //计算向左最多能放置的id
         int maxSet = (int)(xCenter / (AbstractCard.IMG_WIDTH * SHOW_SCALE)) - 1;
         if(maxSet > idCard)
-            return -idCard;
-        return -maxSet;
+            return idCard;  // 修复：从负数改为正数，实现从左向右排列
+        return maxSet;      // 修复：从负数改为正数
     }
 
     //获得接下来5张牌的攻击总数
@@ -156,8 +190,8 @@ public class CardBox {
     //对牌内容的渲染
     public void render(SpriteBatch sb)
     {
-        //更新卡牌位置以跟随怪物移动
-        updateCardPositions();
+        // 更新所有卡牌位置和悬停效果
+        update();
 
         //判断是否需要更新显示位置
         boolean updateLocation=false;
@@ -184,12 +218,12 @@ public class CardBox {
 
         //下回合抽牌显示的数量
         int showDrawNum = Math.min(MAX_SHOW_NUM-shownCards.cardList.size(),shownCards.drawingCards.size());
-        //有圆顶的情况下不显示即将抽到的牌 (单机模式移除网络依赖)
-        // if(SocketServer.hasDome)
-        //     showDrawNum=0;
-        int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum -1);
-        //先显示要抽的牌
-        for(int idCard=showDrawNum-1;idCard>=0;--idCard)
+        //从左向右显示卡牌，修正渲染顺序
+        int startOffset = getXOffsetById(shownCards.cardList.size());
+        int xOffset = startOffset;
+
+        //先显示要抽的牌（从左向右）
+        for(int idCard=0; idCard<showDrawNum; idCard++)
         {
             //当前的牌
             AbstractCard card = shownCards.drawingCards.get(idCard);
@@ -203,7 +237,6 @@ public class CardBox {
                 //更新卡牌的缩放大小
                 card.targetDrawScale = SHOW_SCALE;
                 card.drawScale = SHOW_SCALE;
-                ++xOffset;
                 //设置这个牌的透明度
                 CardShowChange.setCardSemiTransparent(card);
             }
@@ -213,7 +246,9 @@ public class CardBox {
             applyHoverEffect(card, isHovered);
 
             card.render(sb);
+            ++xOffset;
         }
+        // 更新已出卡牌的显示（从左向右）
         for (AbstractCard card : shownCards.cardList) {
             //获取当前位置的牌
             //判断是否需要更新位置
@@ -226,7 +261,6 @@ public class CardBox {
                 //更新卡牌的缩放大小
                 card.targetDrawScale = SHOW_SCALE;
                 card.drawScale = SHOW_SCALE;
-                ++xOffset;
                 card.unfadeOut();
             }
 
@@ -236,6 +270,7 @@ public class CardBox {
 
             //渲染这个牌
             card.render(sb);
+            ++xOffset;
         }
     }
 

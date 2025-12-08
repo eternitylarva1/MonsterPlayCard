@@ -430,6 +430,8 @@ public class MonsterCardPlayer {
                 ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
             }
 
+            // 添加出牌动画效果
+            playCardAnimation(card, targetPlayer);
             // 直接调用卡牌的use方法
             card.use(targetPlayer, monster);
 
@@ -706,4 +708,22 @@ public class MonsterCardPlayer {
     public int getCurrentEnergy() {
         return currentEnergy;
     }
+    /**
+     * 播放卡牌出牌动画
+     */
+    private void playCardAnimation(AbstractCard card, AbstractPlayer targetPlayer) {
+        try {
+            // 创建卡牌动画，让卡牌从怪物头顶移动到目标位置
+            card.fadingOut = true;
+            card.target_x = targetPlayer.drawX;
+            card.target_y = targetPlayer.drawY;
+            card.targetDrawScale = 0.5f;
+
+            Hpr.info("为怪物 " + monster.name + " 的卡牌 " + card.name + " 添加出牌动画");
+
+        } catch (Exception e) {
+            Hpr.info("创建卡牌动画时出错: " + e.getMessage());
+        }
+    }
+
 }
