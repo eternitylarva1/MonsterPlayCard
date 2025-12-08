@@ -23,10 +23,10 @@ import com.megacrit.cardcrawl.vfx.combat.FlameBarrierEffect;
 public class EnFlameBarrier extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Flame Barrier");
-    public static final String ID = "EveryMonsterPlayCard:EnFlameBarrier";
+    public static final String ID = "downfall_Charboss:FlameBarrier";
 
     public EnFlameBarrier() {
-        super("EveryMonsterPlayCard:EnFlameBarrier", cardStrings.NAME, "red/skill/flame_barrier", 2, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:FlameBarrier", cardStrings.NAME, "red/skill/flame_barrier", 2, cardStrings.DESCRIPTION,
               CardType.SKILL, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseBlock = 12;

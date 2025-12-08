@@ -10,14 +10,15 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-public class MonsterSkillCard2 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterSkillCard2";
-    private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Blur");
+public class EnDefendRed extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:DefendRed";
+    private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Defend_R");
 
-    public MonsterSkillCard2() {
-        super("EveryMonsterPlayCard:MonsterSkillCard2", cardStrings.NAME, "green/skill/blur", 1, cardStrings.DESCRIPTION, 
-              AbstractCard.CardType.SKILL, AbstractCard.CardColor.GREEN, AbstractCard.CardRarity.UNCOMMON, AbstractCard.CardTarget.SELF);
+    public EnDefendRed() {
+        super("downfall_Charboss:DefendRed", cardStrings.NAME, "red/skill/defend", 1, cardStrings.DESCRIPTION,
+              AbstractCard.CardType.SKILL, AbstractCard.CardColor.RED, AbstractCard.CardRarity.BASIC, AbstractCard.CardTarget.SELF);
         this.baseBlock=this.block = 5;
+        this.tags.add(AbstractCard.CardTags.STARTER_DEFEND);
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
@@ -32,6 +33,6 @@ public class MonsterSkillCard2 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterSkillCard2();
+        return new EnDefendRed();
     }
 }

@@ -22,10 +22,10 @@ import java.util.ArrayList;
 public class EnBarricade extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Barricade");
-    public static final String ID = "EveryMonsterPlayCard:EnBarricade";
+    public static final String ID = "downfall_Charboss:Barricade";
 
     public EnBarricade() {
-        super("EveryMonsterPlayCard:EnBarricade", cardStrings.NAME, "red/power/barricade", 3, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Barricade", cardStrings.NAME, "red/power/barricade", 3, cardStrings.DESCRIPTION,
               CardType.POWER, CardColor.RED, CardRarity.RARE, CardTarget.SELF);
 
         this.baseMagicNumber = this.magicNumber = 1;

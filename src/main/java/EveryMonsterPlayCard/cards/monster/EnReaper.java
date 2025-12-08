@@ -24,10 +24,10 @@ import com.megacrit.cardcrawl.powers.StrengthPower;
 public class EnReaper extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Reaper");
-    public static final String ID = "EveryMonsterPlayCard:EnReaper";
+    public static final String ID = "downfall_Charboss:Reaper";
 
     public EnReaper() {
-        super("EveryMonsterPlayCard:EnReaper", cardStrings.NAME, "red/attack/reaper", 2, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Reaper", cardStrings.NAME, "red/attack/reaper", 2, cardStrings.DESCRIPTION,
               CardType.ATTACK, CardColor.RED, CardRarity.RARE, CardTarget.ALL_ENEMY);
 
         this.baseDamage = 4;

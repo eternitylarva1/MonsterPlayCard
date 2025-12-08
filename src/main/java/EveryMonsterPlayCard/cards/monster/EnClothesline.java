@@ -12,39 +12,42 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.AbstractPower;
-import com.megacrit.cardcrawl.powers.VulnerablePower;
+import com.megacrit.cardcrawl.powers.WeakPower;
 
-public class MonsterAttackCard1 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard1";
-    private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Bash");
+import java.util.ArrayList;
 
-    public MonsterAttackCard1() {
-        super("EveryMonsterPlayCard:MonsterAttackCard1", cardStrings.NAME, "red/attack/bash", 2, cardStrings.DESCRIPTION, 
-              AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.BASIC, AbstractCard.CardTarget.ENEMY);
-        this.baseDamage = 8;
+public class EnClothesline extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Clothesline";
+    private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Clothesline");
+
+    public EnClothesline() {
+        super("downfall_Charboss:Clothesline", cardStrings.NAME, "red/attack/clothesline", 2, cardStrings.DESCRIPTION,
+              AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.COMMON, AbstractCard.CardTarget.ENEMY);
+        this.baseDamage = 12;
         this.baseMagicNumber = 2;
-
         this.magicNumber = this.baseMagicNumber;
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
         calculateCardDamage(m);
 
-        // 造成伤害
         AbstractDungeon.actionManager.addToBottom(new DamageAction((AbstractCreature)p, new DamageInfo((AbstractCreature)m, this.damage, this.damageTypeForTurn), AbstractGameAction.AttackEffect.BLUNT_HEAVY));
-
-        // 施加易伤效果
-        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction((AbstractCreature)p, (AbstractCreature)m, (AbstractPower)new VulnerablePower((AbstractCreature)p, this.magicNumber, true), this.magicNumber));
+        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction((AbstractCreature)p, (AbstractCreature)m, (AbstractPower)new WeakPower((AbstractCreature)p, this.magicNumber, true), this.magicNumber));
     }
 
     public void upgrade() {
         if (!this.upgraded) {
             upgradeName();
             upgradeDamage(2);
+            upgradeMagicNumber(1);
         }
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard1();
+        return new EnClothesline();
+    }
+
+    public int getPriority(ArrayList<AbstractCard> hand) {
+        return 50;
     }
 }

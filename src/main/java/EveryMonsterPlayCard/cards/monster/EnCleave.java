@@ -15,12 +15,12 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.combat.CleaveEffect;
 
-public class MonsterAttackCard5 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard5";
+public class EnCleave extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Cleave";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Cleave");
 
-    public MonsterAttackCard5() {
-        super("EveryMonsterPlayCard:MonsterAttackCard5", cardStrings.NAME, "red/attack/cleave", 1, cardStrings.DESCRIPTION,
+    public EnCleave() {
+        super("downfall_Charboss:Cleave", cardStrings.NAME, "red/attack/cleave", 1, cardStrings.DESCRIPTION,
               AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.COMMON, AbstractCard.CardTarget.ALL_ENEMY);
         this.baseDamage = 8;
     }
@@ -41,6 +41,6 @@ public class MonsterAttackCard5 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard5();
+        return new EnCleave();
     }
 }

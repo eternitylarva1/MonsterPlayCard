@@ -11,12 +11,12 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-public class MonsterAttackCard2 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard2";
+public class EnBodySlam extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:BodySlam";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Body Slam");
 
-    public MonsterAttackCard2() {
-        super("EveryMonsterPlayCard:MonsterAttackCard2", cardStrings.NAME, "red/attack/body_slam", 1, cardStrings.DESCRIPTION, 
+    public EnBodySlam() {
+        super("downfall_Charboss:BodySlam", cardStrings.NAME, "red/attack/body_slam", 1, cardStrings.DESCRIPTION, 
               AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.COMMON, AbstractCard.CardTarget.ENEMY);
         this.baseDamage = 0;
     }
@@ -35,6 +35,6 @@ public class MonsterAttackCard2 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard2();
+        return new EnBodySlam();
     }
 }

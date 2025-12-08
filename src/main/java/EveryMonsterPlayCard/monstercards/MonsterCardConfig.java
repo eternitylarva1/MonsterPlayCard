@@ -10,15 +10,14 @@ import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 
 // 新导入的怪物卡牌
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard1;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard2;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard3;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard4;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard5;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard6;
-import EveryMonsterPlayCard.cards.monster.MonsterSkillCard1;
-import EveryMonsterPlayCard.cards.monster.MonsterSkillCard2;
-import EveryMonsterPlayCard.cards.monster.MonsterSkillCard3;
+import EveryMonsterPlayCard.cards.monster.EnBash;
+import EveryMonsterPlayCard.cards.monster.EnBodySlam;
+import EveryMonsterPlayCard.cards.monster.EnBackstab;
+import EveryMonsterPlayCard.cards.monster.EnCarnage;
+import EveryMonsterPlayCard.cards.monster.EnCleave;
+import EveryMonsterPlayCard.cards.monster.EnClothesline;
+import EveryMonsterPlayCard.cards.monster.EnDefendRed;
+import EveryMonsterPlayCard.cards.monster.EnBlur;
 import EveryMonsterPlayCard.cards.monster.EnDemonForm;
 import EveryMonsterPlayCard.cards.monster.EnDisarm;
 import EveryMonsterPlayCard.cards.monster.EnDoubleTap;
@@ -61,23 +60,23 @@ public class MonsterCardConfig {
 
         // 添加从崩坠卡牌搬运过来的10张怪物卡牌（简化版本）
 
-        // 1. MonsterAttackCard1 - 红色攻击卡 (2费，8伤害)
-        universalMonsterCards.add(new MonsterAttackCard1());
+        // 1. EnBash - 红色攻击卡 (2费，8伤害)
+        universalMonsterCards.add(new EnBash());
 
-        // 2. MonsterAttackCard2 - 红色攻击卡 (1费，基于当前格挡伤害)
-        universalMonsterCards.add(new MonsterAttackCard2());
+        // 2. EnBodySlam - 红色攻击卡 (1费，基于当前格挡伤害)
+        universalMonsterCards.add(new EnBodySlam());
 
-        // 3. MonsterAttackCard3 - 绿色攻击卡 (0费，11伤害，内在，消耗)
-        universalMonsterCards.add(new MonsterAttackCard3());
+        // 3. EnBackstab - 绿色攻击卡 (0费，11伤害，内在，消耗)
+        universalMonsterCards.add(new EnBackstab());
 
-        // 4. MonsterAttackCard4 - 红色攻击卡 (2费，20伤害，内在)
-        universalMonsterCards.add(new MonsterAttackCard4());
+        // 4. EnCarnage - 红色攻击卡 (2费，20伤害，内在)
+        universalMonsterCards.add(new EnCarnage());
 
-        // 5. MonsterAttackCard5 - 红色攻击卡 (1费，8伤害，全体)
-        universalMonsterCards.add(new MonsterAttackCard5());
+        // 5. EnCleave - 红色攻击卡 (1费，8伤害，全体)
+        universalMonsterCards.add(new EnCleave());
 
-        // 6. MonsterAttackCard6 - 红色攻击卡 (2费，12伤害+虚弱)
-        universalMonsterCards.add(new MonsterAttackCard6());
+        // 6. EnClothesline - 红色攻击卡 (2费，12伤害+虚弱)
+        universalMonsterCards.add(new EnClothesline());
 
         // 7. EnDoubleTap - 红色技能卡 (1费，双击效果)
         universalMonsterCards.add(new EnDoubleTap());
@@ -85,22 +84,19 @@ public class MonsterCardConfig {
         // 8. EnFeed - 红色攻击卡 (1费，10伤害+回复)
         universalMonsterCards.add(new EnFeed());
 
-        // 9. MonsterSkillCard1 - 蓝色技能卡 (1费，11格挡，如果当前无格挡)
-        universalMonsterCards.add(new MonsterSkillCard1());
+        // 9. EnDefendRed - 红色技能卡 (1费，5格挡)
+        universalMonsterCards.add(new EnDefendRed());
 
-        // 10. MonsterSkillCard2 - 绿色技能卡 (1费，5格挡)
-        universalMonsterCards.add(new MonsterSkillCard2());
+        // 10. EnBlur - 绿色技能卡 (1费，5格挡)
+        universalMonsterCards.add(new EnBlur());
 
-        // 11. MonsterSkillCard3 - 红色技能卡 (1费，5格挡)
-        universalMonsterCards.add(new MonsterSkillCard3());
-
-        // 12. EnDisarm - 红色技能卡 (1费，缴械)
+        // 11. EnDisarm - 红色技能卡 (1费，缴械)
         universalMonsterCards.add(new EnDisarm());
 
-        // 13. EnEntrench - 红色技能卡 (2费，格挡翻倍)
+        // 12. EnEntrench - 红色技能卡 (2费，格挡翻倍)
         universalMonsterCards.add(new EnEntrench());
 
-        // 14. EnDemonForm - 红色力量卡 (3费，恶魔形态)
+        // 13. EnDemonForm - 红色力量卡 (3费，恶魔形态)
         universalMonsterCards.add(new EnDemonForm());
 
         // 清理掉null值，确保只添加有效的卡牌

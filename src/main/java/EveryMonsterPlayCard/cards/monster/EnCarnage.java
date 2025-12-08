@@ -17,12 +17,12 @@ import com.megacrit.cardcrawl.vfx.StarBounceEffect;
 import com.megacrit.cardcrawl.vfx.combat.ViolentAttackEffect;
 import com.badlogic.gdx.graphics.Color;
 
-public class MonsterAttackCard4 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard4";
+public class EnCarnage extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Carnage";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Carnage");
 
-    public MonsterAttackCard4() {
-        super("EveryMonsterPlayCard:MonsterAttackCard4", cardStrings.NAME, "red/attack/carnage", 2, cardStrings.DESCRIPTION,
+    public EnCarnage() {
+        super("downfall_Charboss:Carnage", cardStrings.NAME, "red/attack/carnage", 2, cardStrings.DESCRIPTION,
               AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.UNCOMMON, AbstractCard.CardTarget.ENEMY);
         this.baseDamage = 20;
         this.isEthereal = true;
@@ -56,6 +56,6 @@ public class MonsterAttackCard4 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard4();
+        return new EnCarnage();
     }
 }

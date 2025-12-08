@@ -21,10 +21,10 @@ import com.megacrit.cardcrawl.powers.WeakPower;
 public class EnUppercut extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Uppercut");
-    public static final String ID = "EveryMonsterPlayCard:EnUppercut";
+    public static final String ID = "downfall_Charboss:Uppercut";
 
     public EnUppercut() {
-        super("EveryMonsterPlayCard:EnUppercut", cardStrings.NAME, "red/attack/uppercut", 2, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Uppercut", cardStrings.NAME, "red/attack/uppercut", 2, cardStrings.DESCRIPTION,
               CardType.ATTACK, CardColor.RED, CardRarity.UNCOMMON, CardTarget.ENEMY);
 
         this.baseDamage = 13;

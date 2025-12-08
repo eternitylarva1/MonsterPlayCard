@@ -18,10 +18,10 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 public class EnBloodletting extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Bloodletting");
-    public static final String ID = "EveryMonsterPlayCard:EnBloodletting";
+    public static final String ID = "downfall_Charboss:Bloodletting";
 
     public EnBloodletting() {
-        super("EveryMonsterPlayCard:EnBloodletting", cardStrings.NAME, "red/skill/bloodletting", 0, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Bloodletting", cardStrings.NAME, "red/skill/bloodletting", 0, cardStrings.DESCRIPTION,
               CardType.SKILL, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseMagicNumber = 2;

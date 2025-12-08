@@ -23,10 +23,10 @@ public class EnArmaments extends AbstractMonsterCard {
     private static final UIStrings uiStrings = CardCrawlGame.languagePack.getUIString("ArmamentsAction");
     private static final String[] TEXT = uiStrings.TEXT;
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Armaments");
-    public static final String ID = "EveryMonsterPlayCard:EnArmaments";
+    public static final String ID = "downfall_Charboss:Armaments";
 
     public EnArmaments() {
-        super("EveryMonsterPlayCard:EnArmaments", cardStrings.NAME, "red/skill/armaments", 1, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Armaments", cardStrings.NAME, "red/skill/armaments", 1, cardStrings.DESCRIPTION,
               CardType.SKILL, CardColor.RED, CardRarity.COMMON, CardTarget.SELF);
 
         this.baseBlock = 5;

@@ -25,10 +25,10 @@ import com.badlogic.gdx.graphics.Color;
 public class EnAnger extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Anger");
-    public static final String ID = "EveryMonsterPlayCard:EnAnger";
+    public static final String ID = "downfall_Charboss:Anger";
 
     public EnAnger() {
-        super("EveryMonsterPlayCard:EnAnger", cardStrings.NAME, "red/attack/anger", 0, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Anger", cardStrings.NAME, "red/attack/anger", 0, cardStrings.DESCRIPTION,
               CardType.ATTACK, CardColor.RED, CardRarity.COMMON, CardTarget.ENEMY);
 
         this.baseDamage = 6;

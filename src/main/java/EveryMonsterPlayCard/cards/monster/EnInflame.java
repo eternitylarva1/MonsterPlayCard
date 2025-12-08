@@ -21,10 +21,10 @@ import com.megacrit.cardcrawl.vfx.combat.InflameEffect;
 public class EnInflame extends AbstractMonsterCard {
 
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Inflame");
-    public static final String ID = "EveryMonsterPlayCard:EnInflame";
+    public static final String ID = "downfall_Charboss:Inflame";
 
     public EnInflame() {
-        super("EveryMonsterPlayCard:EnInflame", cardStrings.NAME, "red/power/inflame", 1, cardStrings.DESCRIPTION,
+        super("downfall_Charboss:Inflame", cardStrings.NAME, "red/power/inflame", 1, cardStrings.DESCRIPTION,
               CardType.POWER, CardColor.RED, CardRarity.UNCOMMON, CardTarget.SELF);
 
         this.baseMagicNumber = 2;

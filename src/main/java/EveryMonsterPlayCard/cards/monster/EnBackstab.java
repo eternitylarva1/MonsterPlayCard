@@ -11,12 +11,12 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-public class MonsterAttackCard3 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard3";
+public class EnBackstab extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Backstab";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Backstab");
 
-    public MonsterAttackCard3() {
-        super("EveryMonsterPlayCard:MonsterAttackCard3", cardStrings.NAME, "green/attack/backstab", 0, cardStrings.DESCRIPTION, 
+    public EnBackstab() {
+        super("downfall_Charboss:Backstab", cardStrings.NAME, "green/attack/backstab", 0, cardStrings.DESCRIPTION, 
               AbstractCard.CardType.ATTACK, AbstractCard.CardColor.GREEN, AbstractCard.CardRarity.UNCOMMON, AbstractCard.CardTarget.ENEMY);
         this.baseDamage = 11;
         this.isInnate = true;
@@ -36,6 +36,6 @@ public class MonsterAttackCard3 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard3();
+        return new EnBackstab();
     }
 }
