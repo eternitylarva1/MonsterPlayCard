@@ -5,6 +5,8 @@ import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
 import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
 import EveryMonsterPlayCard.utils.Hpr;
 import EveryMonsterPlayCard.ui.BattleUI.*;
+import EveryMonsterPlayCard.core.LocalEventBus;
+import EveryMonsterPlayCard.core.events.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
@@ -59,6 +61,13 @@ public class MonsterCardPlayer {
     // 当前能量
     private int currentEnergy = 3;
 
+    // 事件驱动系统 (从PVP系统移植)
+    private LocalEventBus eventBus;                           // 事件总线
+    private int playerId;                                     // 玩家ID（用于事件区分）
+    private int turnNumber = 1;                               // 当前回合数
+    private int cardsPlayedThisTurn = 0;                      // 当前回合出牌数
+    private int previousEnergy = 3;                           // 之前的能量（用于事件）
+
     // 卡牌显示位置
     private static final float CARD_DISPLAY_HEIGHT = 80.0f * Settings.scale;
     private static final float CARD_HOVER_SCALE = 0.6f;
@@ -80,8 +89,35 @@ public class MonsterCardPlayer {
             cardRecorder, monster
         );
 
+        // 初始化事件系统
+        initializeEventSystem();
+
         // 初始化卡牌系统
         initializeCardSystem();
+    }
+
+    /**
+     * 初始化事件系统
+     */
+    private void initializeEventSystem() {
+        // 获取事件总线实例
+        this.eventBus = LocalEventBus.getInstance();
+
+        // 生成玩家ID（使用怪物的哈希码）
+        this.playerId = monster.hashCode();
+
+        // 注册事件监听器
+        registerEventListeners();
+
+        Hpr.info("为怪物 " + monster.name + " 初始化事件系统，玩家ID: " + playerId);
+    }
+
+    /**
+     * 注册事件监听器
+     */
+    private void registerEventListeners() {
+        // 这里可以注册其他组件的事件监听器
+        // 目前主要是发送事件，接收事件的功能可以后续扩展
     }
 
     /**
@@ -187,11 +223,26 @@ public class MonsterCardPlayer {
 
         // 重置回合标记
         hasPlayedCardThisTurn = false;
+        cardsPlayedThisTurn = 0;
+
+        // 发送回合开始事件
+        sendTurnStartEvent();
 
         // 出牌（每个怪物回合出1张牌）
         playCardForTurn();
 
         Hpr.info("怪物 " + monster.name + " 回合开始，已出牌: " + hasPlayedCardThisTurn);
+    }
+
+    /**
+     * 发送回合开始事件
+     */
+    private void sendTurnStartEvent() {
+        if (eventBus != null) {
+            TurnStartEvent event = new TurnStartEvent(monster.hashCode(), playerId, turnNumber, currentEnergy);
+            eventBus.sendEvent(event);
+            Hpr.info("发送回合开始事件: " + event.toString());
+        }
     }
 
     /**
@@ -250,10 +301,27 @@ public class MonsterCardPlayer {
             // 执行卡牌效果（使用游戏原生Action系统）
             executeMonsterCard(drawnCard);
 
+            // 发送卡牌出牌事件
+            sendCardPlayEvent(drawnCard);
+
             // 标记本回合已出牌
             hasPlayedCardThisTurn = true;
+            cardsPlayedThisTurn++;
 
             Hpr.info("怪物 " + monster.name + " 回合开始打出了: " + drawnCard.name);
+        }
+    }
+
+    /**
+     * 发送卡牌出牌事件
+     */
+    private void sendCardPlayEvent(AbstractCard card) {
+        if (eventBus != null && card != null) {
+            // 生成卡牌ID（使用哈希码）
+            int cardId = card.cardID.hashCode();
+            CardPlayEvent event = new CardPlayEvent(monster.hashCode(), cardId, playerId, card.name);
+            eventBus.sendEvent(event);
+            Hpr.info("发送卡牌出牌事件: " + event.toString());
         }
     }
 
@@ -277,8 +345,26 @@ public class MonsterCardPlayer {
             }
         }
 
+        // 发送手牌更新事件
+        sendHandUpdateEvent();
+
         // 标记已经设置初始显示
         initialDisplaySetup = true;
+    }
+
+    /**
+     * 发送手牌更新事件
+     */
+    private void sendHandUpdateEvent() {
+        if (eventBus != null) {
+            ArrayList<Integer> cardIds = new ArrayList<>();
+            for (AbstractCard card : displayedCards) {
+                cardIds.add(card.cardID.hashCode());
+            }
+            HandUpdateEvent event = new HandUpdateEvent(monster.hashCode(), cardIds, playerId);
+            eventBus.sendEvent(event);
+            Hpr.info("发送手牌更新事件: " + event.toString());
+        }
     }
 
     /**
@@ -541,5 +627,42 @@ public class MonsterCardPlayer {
         if (battleCardPanel != null && enabled) {
             battleCardPanel.update();
         }
+    }
+
+    /**
+     * 设置能量（发送能量更新事件）
+     */
+    public void setEnergy(int newEnergy) {
+        int oldEnergy = this.currentEnergy;
+        this.previousEnergy = oldEnergy;
+        this.currentEnergy = Math.max(0, newEnergy); // 能量不能为负
+
+        // 发送能量更新事件
+        sendEnergyUpdateEvent(oldEnergy, this.currentEnergy);
+
+        // 更新UI面板
+        if (battleCardPanel != null) {
+            battleCardPanel.setEnergy(this.currentEnergy);
+        }
+
+        Hpr.info("怪物 " + monster.name + " 能量变化: " + oldEnergy + " -> " + this.currentEnergy);
+    }
+
+    /**
+     * 发送能量更新事件
+     */
+    private void sendEnergyUpdateEvent(int oldEnergy, int newEnergy) {
+        if (eventBus != null && oldEnergy != newEnergy) {
+            EnergyUpdateEvent event = new EnergyUpdateEvent(monster.hashCode(), playerId, oldEnergy, newEnergy);
+            eventBus.sendEvent(event);
+            Hpr.info("发送能量更新事件: " + event.toString());
+        }
+    }
+
+    /**
+     * 获取当前能量
+     */
+    public int getCurrentEnergy() {
+        return currentEnergy;
     }
 }
