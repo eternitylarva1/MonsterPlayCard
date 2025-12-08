@@ -3,6 +3,8 @@ package EveryMonsterPlayCard.ui.BattleUI;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
+import EveryMonsterPlayCard.monstercards.CardShowChange;
 
 //这是一个用来显示牌的界面，会显示在敌人的头上。
 public class CardBox {
@@ -42,6 +44,50 @@ public class CardBox {
                    CardRecorder shownCards)
     {
         this(xCenter,yCenter,shownCards,null);
+    }
+
+    /**
+     * 更新卡牌位置以跟随怪物移动
+     */
+    public void updateCardPositions() {
+        if (belongMonster != null) {
+            // 更新位置以跟随怪物
+            this.xCenter = belongMonster.drawX;
+            this.yCenter = belongMonster.drawY + belongMonster.hb_h * 1.5f;
+        }
+    }
+
+    /**
+     * 检查卡牌是否被鼠标悬停
+     */
+    private boolean isCardHovered(AbstractCard card, float cardX, float cardY) {
+        float mouseX = InputHelper.mX;
+        float mouseY = InputHelper.mY;
+
+        float cardWidth = card.hb.width * card.drawScale;
+        float cardHeight = card.hb.height * card.drawScale;
+        float cardLeft = cardX - cardWidth / 2.0f;
+        float cardRight = cardX + cardWidth / 2.0f;
+        float cardTop = cardY + cardHeight / 2.0f;
+        float cardBottom = cardY - cardHeight / 2.0f;
+
+        return mouseX >= cardLeft && mouseX <= cardRight &&
+               mouseY >= cardBottom && mouseY <= cardTop;
+    }
+
+    /**
+     * 应用悬停效果
+     */
+    private void applyHoverEffect(AbstractCard card, boolean isHovered) {
+        if (isHovered) {
+            // 悬停时放大并设置为完全不透明
+            card.targetDrawScale = SHOW_SCALE * 1.2f;  // 放大120%
+            CardShowChange.setCardFullyVisible(card);
+        } else {
+            // 非悬停时恢复正常大小和半透明
+            card.targetDrawScale = SHOW_SCALE;
+            CardShowChange.setCardSemiTransparent(card);
+        }
     }
 
     //根据当前是第几个牌来计算当前的偏移量
@@ -110,6 +156,9 @@ public class CardBox {
     //对牌内容的渲染
     public void render(SpriteBatch sb)
     {
+        //更新卡牌位置以跟随怪物移动
+        updateCardPositions();
+
         //判断是否需要更新显示位置
         boolean updateLocation=false;
         if(this.belongMonster != null && (shownCards.justUpdateFlag ||
@@ -155,9 +204,14 @@ public class CardBox {
                 card.targetDrawScale = SHOW_SCALE;
                 card.drawScale = SHOW_SCALE;
                 ++xOffset;
-                //强行设置这个牌的透明度 (单机模式移除网络依赖)
-                // CardShowChange.changeCardAlpha(card,0.5f);
+                //设置这个牌的透明度
+                CardShowChange.setCardSemiTransparent(card);
             }
+
+            // 检查悬停效果
+            boolean isHovered = isCardHovered(card, card.current_x, card.current_y);
+            applyHoverEffect(card, isHovered);
+
             card.render(sb);
         }
         for (AbstractCard card : shownCards.cardList) {
@@ -175,6 +229,11 @@ public class CardBox {
                 ++xOffset;
                 card.unfadeOut();
             }
+
+            // 检查悬停效果
+            boolean isHovered = isCardHovered(card, card.current_x, card.current_y);
+            applyHoverEffect(card, isHovered);
+
             //渲染这个牌
             card.render(sb);
         }
