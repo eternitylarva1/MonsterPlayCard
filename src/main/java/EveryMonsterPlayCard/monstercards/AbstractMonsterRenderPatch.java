@@ -16,12 +16,16 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 )
 class AbstractMonsterRenderPatch {
 
-    @SpirePostfixPatch
-    public static void postfix(AbstractMonster __instance, SpriteBatch sb) {
+    @SpireInsertPatch(
+        loc = 999,  // 在render方法的最后插入
+        rloc = 999
+    )
+    public static void insert(AbstractMonster __instance, SpriteBatch sb) {
         // 在怪物render方法结束后渲染怪物的头顶卡牌
-
-
-        MonsterCardManager.getInstance().renderMonster(sb, __instance);
-
+        try {
+            MonsterCardManager.getInstance().renderMonster(sb, __instance);
+        } catch (Exception e) {
+            Hpr.info("渲染怪物卡牌时出错: " + e.getMessage());
+        }
     }
 }
