@@ -7,7 +7,7 @@
 
 ## 搬运进度表
 
-### ✅ 已完成 (14张)
+### ✅ 已完成 (19张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
 | 1 | EnBash | MonsterAttackCard1 | MonsterAttackCard1.java | ✅ 完成 | Bash - 攻击+易伤 |
@@ -24,20 +24,20 @@
 | 12 | EnClothesline | MonsterAttackCard6 | MonsterAttackCard6.java | ✅ 完成 | Clothesline - 2费12伤害+虚弱 |
 | 13 | EnDefendRed | MonsterSkillCard3 | MonsterSkillCard3.java | ✅ 完成 | Defend_R - 1费5格挡 |
 | 14 | EnBodySlam | MonsterAttackCard2 | MonsterAttackCard2.java | ✅ 完成 | BodySlam - 基于格挡造成伤害 |
+| 15 | EnDemonForm | MonsterPowerCard4 | MonsterPowerCard4.java | ✅ 完成 | Demon Form - 3费，力量+2 |
+| 16 | EnDisarm | MonsterSkillCard7 | MonsterSkillCard7.java | ✅ 完成 | Disarm - 1费，移除2力量 |
+| 17 | EnDoubleTap | MonsterAttackCard11 | MonsterAttackCard11.java | ✅ 完成 | Double Tap - 1费，攻击牌打两次 |
+| 18 | EnEntrench | MonsterSkillCard8 | MonsterSkillCard8.java | ✅ 完成 | Entrench - 2费，格挡翻倍 |
+| 19 | EnFeed | MonsterAttackCard12 | MonsterAttackCard12.java | ✅ 完成 | Feed - 1费，10伤害+回复3生命 |
 
 ### 🚧 进行中 (0张)
 | 序号 | 原始类名 | 新类名 | 文件 | 状态 | 备注 |
 |------|----------|--------|------|------|------|
 | - | - | - | - | - | - |
 
-### 📋 待搬运 (35张)
+### 📋 待搬运 (30张)
 | 序号 | 原始类名 | 新类名 | 状态 | 备注 |
 |------|----------|--------|------|------|
-| 15 | EnDemonForm | MonsterPowerCard4 | 📋 待搬运 | 恶魔形态 - 力量持续增长 |
-| 16 | EnDisarm | MonsterSkillCard7 | 📋 待搬运 | 缴械 - 移除力量 |
-| 17 | EnDoubleTap | MonsterAttackCard11 | 📋 待搬运 | 双击 - 攻击两次 |
-| 18 | EnEntrench | MonsterSkillCard8 | 📋 待搬运 | 挖掘 - 格挡翻倍 |
-| 19 | EnFeed | MonsterAttackCard12 | 📋 待搬运 | 进食 - 击杀回复生命 |
 | 20 | EnFeelNoPain | MonsterPowerCard5 | 📋 待搬运 | 无痛 - 格挡时造成伤害 |
 | 21 | EnFlex | MonsterSkillCard9 | 📋 待搬运 | 屈肌 - 临时力量 |
 | 22 | EnGhostlyArmor | MonsterSkillCard10 | 📋 待搬运 | 幽灵盔甲 - 格挡+下回合保留 |
