@@ -13,12 +13,12 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
 import java.util.ArrayList;
 
-public class MonsterSkillCard8 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterSkillCard8";
+public class EnEntrench extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Entrench";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Entrench");
 
-    public MonsterSkillCard8() {
-        super("EveryMonsterPlayCard:MonsterSkillCard8", cardStrings.NAME, "red/skill/entrench", 2, cardStrings.DESCRIPTION,
+    public EnEntrench() {
+        super("downfall_Charboss:Entrench", cardStrings.NAME, "red/skill/entrench", 2, cardStrings.DESCRIPTION,
               AbstractCard.CardType.SKILL, AbstractCard.CardColor.RED, AbstractCard.CardRarity.UNCOMMON, AbstractCard.CardTarget.SELF);
         this.baseBlock = this.block = 10;
     }
@@ -45,6 +45,6 @@ public class MonsterSkillCard8 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterSkillCard8();
+        return new EnEntrench();
     }
 }

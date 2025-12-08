@@ -16,12 +16,12 @@ import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.combat.BiteEffect;
 import com.badlogic.gdx.graphics.Color;
 
-public class MonsterAttackCard12 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard12";
+public class EnFeed extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Feed";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Feed");
 
-    public MonsterAttackCard12() {
-        super("EveryMonsterPlayCard:MonsterAttackCard12", cardStrings.NAME, "red/attack/feed", 1, cardStrings.DESCRIPTION,
+    public EnFeed() {
+        super("downfall_Charboss:Feed", cardStrings.NAME, "red/attack/feed", 1, cardStrings.DESCRIPTION,
               AbstractCard.CardType.ATTACK, AbstractCard.CardColor.RED, AbstractCard.CardRarity.RARE, AbstractCard.CardTarget.ENEMY);
         this.baseDamage = 10;
         this.exhaust = true;
@@ -46,6 +46,6 @@ public class MonsterAttackCard12 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard12();
+        return new EnFeed();
     }
 }

@@ -16,14 +16,14 @@ import EveryMonsterPlayCard.cards.monster.MonsterAttackCard3;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard4;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard5;
 import EveryMonsterPlayCard.cards.monster.MonsterAttackCard6;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard11;
-import EveryMonsterPlayCard.cards.monster.MonsterAttackCard12;
 import EveryMonsterPlayCard.cards.monster.MonsterSkillCard1;
 import EveryMonsterPlayCard.cards.monster.MonsterSkillCard2;
 import EveryMonsterPlayCard.cards.monster.MonsterSkillCard3;
-import EveryMonsterPlayCard.cards.monster.MonsterSkillCard7;
-import EveryMonsterPlayCard.cards.monster.MonsterSkillCard8;
-import EveryMonsterPlayCard.cards.monster.MonsterPowerCard4;
+import EveryMonsterPlayCard.cards.monster.EnDemonForm;
+import EveryMonsterPlayCard.cards.monster.EnDisarm;
+import EveryMonsterPlayCard.cards.monster.EnDoubleTap;
+import EveryMonsterPlayCard.cards.monster.EnEntrench;
+import EveryMonsterPlayCard.cards.monster.EnFeed;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,11 +79,11 @@ public class MonsterCardConfig {
         // 6. MonsterAttackCard6 - 红色攻击卡 (2费，12伤害+虚弱)
         universalMonsterCards.add(new MonsterAttackCard6());
 
-        // 7. MonsterAttackCard11 - 红色技能卡 (1费，双击效果)
-        universalMonsterCards.add(new MonsterAttackCard11());
+        // 7. EnDoubleTap - 红色技能卡 (1费，双击效果)
+        universalMonsterCards.add(new EnDoubleTap());
 
-        // 8. MonsterAttackCard12 - 红色攻击卡 (1费，10伤害+回复)
-        universalMonsterCards.add(new MonsterAttackCard12());
+        // 8. EnFeed - 红色攻击卡 (1费，10伤害+回复)
+        universalMonsterCards.add(new EnFeed());
 
         // 9. MonsterSkillCard1 - 蓝色技能卡 (1费，11格挡，如果当前无格挡)
         universalMonsterCards.add(new MonsterSkillCard1());
@@ -94,14 +94,14 @@ public class MonsterCardConfig {
         // 11. MonsterSkillCard3 - 红色技能卡 (1费，5格挡)
         universalMonsterCards.add(new MonsterSkillCard3());
 
-        // 12. MonsterSkillCard7 - 红色技能卡 (1费，缴械)
-        universalMonsterCards.add(new MonsterSkillCard7());
+        // 12. EnDisarm - 红色技能卡 (1费，缴械)
+        universalMonsterCards.add(new EnDisarm());
 
-        // 13. MonsterSkillCard8 - 红色技能卡 (2费，格挡翻倍)
-        universalMonsterCards.add(new MonsterSkillCard8());
+        // 13. EnEntrench - 红色技能卡 (2费，格挡翻倍)
+        universalMonsterCards.add(new EnEntrench());
 
-        // 14. MonsterPowerCard4 - 红色力量卡 (3费，恶魔形态)
-        universalMonsterCards.add(new MonsterPowerCard4());
+        // 14. EnDemonForm - 红色力量卡 (3费，恶魔形态)
+        universalMonsterCards.add(new EnDemonForm());
 
         // 清理掉null值，确保只添加有效的卡牌
         universalMonsterCards.removeIf(card -> card == null);

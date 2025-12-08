@@ -14,12 +14,12 @@ import com.megacrit.cardcrawl.powers.DoubleTapPower;
 
 import java.util.ArrayList;
 
-public class MonsterAttackCard11 extends AbstractMonsterCard {
-    public static final String ID = "EveryMonsterPlayCard:MonsterAttackCard11";
+public class EnDoubleTap extends AbstractMonsterCard {
+    public static final String ID = "downfall_Charboss:Double Tap";
     private static final CardStrings cardStrings = CardCrawlGame.languagePack.getCardStrings("Double Tap");
 
-    public MonsterAttackCard11() {
-        super("EveryMonsterPlayCard:MonsterAttackCard11", cardStrings.NAME, "red/skill/double_tap", 1, cardStrings.DESCRIPTION,
+    public EnDoubleTap() {
+        super("downfall_Charboss:Double Tap", cardStrings.NAME, "red/skill/double_tap", 1, cardStrings.DESCRIPTION,
               AbstractCard.CardType.SKILL, AbstractCard.CardColor.RED, AbstractCard.CardRarity.RARE, AbstractCard.CardTarget.SELF);
         this.baseMagicNumber = 1;
         this.magicNumber = this.baseMagicNumber;
@@ -48,6 +48,6 @@ public class MonsterAttackCard11 extends AbstractMonsterCard {
     }
 
     public AbstractCard makeCopy() {
-        return new MonsterAttackCard11();
+        return new EnDoubleTap();
     }
 }
