@@ -94,6 +94,9 @@ public class MonsterCardPlayer {
 
         // 初始化卡牌系统
         initializeCardSystem();
+
+        // 设置初始能量显示
+        setEnergy(currentEnergy);
     }
 
     /**
@@ -335,6 +338,8 @@ public class MonsterCardPlayer {
 
         if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
             Hpr.info("No cards in draw pile for monster: " + monster.name);
+            // 同步空列表到CardRecorder
+            syncCardsToRecorder();
             return;
         }
 
@@ -353,11 +358,33 @@ public class MonsterCardPlayer {
 
         Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
 
+        // 同步卡牌数据到CardRecorder以供UI使用
+        syncCardsToRecorder();
+
         // 发送手牌更新事件
         sendHandUpdateEvent();
 
         // 标记已经设置初始显示
         initialDisplaySetup = true;
+    }
+
+    /**
+     * 同步卡牌数据到CardRecorder以供UI组件使用
+     */
+    private void syncCardsToRecorder() {
+        if (cardRecorder != null) {
+            // 清空现有数据
+            cardRecorder.cardList.clear();
+            cardRecorder.drawingCards.clear();
+
+            // 将当前显示的卡牌同步到CardRecorder
+            cardRecorder.cardList.addAll(displayedCards);
+
+            // 设置更新标记，通知UI需要重新定位
+            cardRecorder.justUpdateFlag = true;
+
+            Hpr.info("Synced " + displayedCards.size() + " cards to CardRecorder for monster: " + monster.name);
+        }
     }
 
     /**
