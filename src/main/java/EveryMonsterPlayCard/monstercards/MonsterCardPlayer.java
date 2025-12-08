@@ -331,19 +331,27 @@ public class MonsterCardPlayer {
     private void refreshDisplayedCards() {
         displayedCards.clear();
 
+        Hpr.info("refreshDisplayedCards() called for monster: " + monster.name + ", drawPile size: " + (monsterDrawPile != null ? monsterDrawPile.size() : "null"));
+
         if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
+            Hpr.info("No cards in draw pile for monster: " + monster.name);
             return;
         }
 
         // 显示抽牌堆顶部的最多5张牌
         int maxDisplay = Math.min(5, monsterDrawPile.size());
+        Hpr.info("Displaying " + maxDisplay + " cards for monster: " + monster.name);
+
         for (int i = monsterDrawPile.size() - maxDisplay; i < monsterDrawPile.size(); i++) {
             AbstractCard card = monsterDrawPile.group.get(i);
             if (card != null) {
                 AbstractCard cardCopy = card.makeStatEquivalentCopy();
                 displayedCards.add(cardCopy);
+                Hpr.info("Added card to display: " + cardCopy.name + " for monster: " + monster.name);
             }
         }
+
+        Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
 
         // 发送手牌更新事件
         sendHandUpdateEvent();
@@ -510,11 +518,14 @@ public class MonsterCardPlayer {
      */
     public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {
         if (displayedCards != null && !displayedCards.isEmpty()) {
+            Hpr.info("MonsterCardPlayer.render() called, rendering " + displayedCards.size() + " cards for monster: " + monster.name);
             for (AbstractCard card : displayedCards) {
                 if (card != null) {
                     card.render(sb);
                 }
             }
+        } else {
+            Hpr.info("MonsterCardPlayer.render() called but no cards to render for monster: " + monster.name);
         }
     }
 
@@ -616,7 +627,10 @@ public class MonsterCardPlayer {
      */
     public void renderUI(SpriteBatch sb) {
         if (battleCardPanel != null && enabled) {
+            Hpr.info("MonsterCardPlayer.renderUI() called for monster: " + monster.name);
             battleCardPanel.render(sb);
+        } else {
+            Hpr.info("MonsterCardPlayer.renderUI() called but battleCardPanel is null or not enabled for monster: " + monster.name);
         }
     }
 
