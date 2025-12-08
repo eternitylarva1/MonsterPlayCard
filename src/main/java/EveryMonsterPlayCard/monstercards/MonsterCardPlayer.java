@@ -4,7 +4,9 @@ import EveryMonsterPlayCard.monstercards.cards.MonsterAttackCard;
 import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
 import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
 import EveryMonsterPlayCard.utils.Hpr;
+import EveryMonsterPlayCard.ui.BattleUI.*;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.common.DamageAction;
 import com.megacrit.cardcrawl.actions.common.GainBlockAction;
@@ -49,6 +51,14 @@ public class MonsterCardPlayer {
     private boolean enabled = false;                       // 是否启用出牌系统
     private boolean hasPlayedCardThisTurn = false;         // 当前回合是否已出牌
 
+    // UI组件 (从PVP系统移植)
+    public BattleCardPanel battleCardPanel;                // 战斗信息面板
+    public PlayerCardManager cardManager;                  // 卡牌管理器
+    public CardRecorder cardRecorder;                      // 卡牌记录器
+
+    // 当前能量
+    private int currentEnergy = 3;
+
     // 卡牌显示位置
     private static final float CARD_DISPLAY_HEIGHT = 80.0f * Settings.scale;
     private static final float CARD_HOVER_SCALE = 0.6f;
@@ -59,6 +69,18 @@ public class MonsterCardPlayer {
     public MonsterCardPlayer(AbstractMonster monster) {
         this.monster = monster;
         this.cardConfig = MonsterCardConfig.getInstance();
+
+        // 初始化UI组件 (从PVP系统移植)
+        this.cardManager = new PlayerCardManager();
+        this.cardRecorder = new CardRecorder();
+
+        // 初始化战斗信息面板
+        this.battleCardPanel = new BattleCardPanel(
+            monster.drawX, monster.drawY + monster.hb_h * 1.5f,
+            cardRecorder, monster
+        );
+
+        // 初始化卡牌系统
         initializeCardSystem();
     }
 
@@ -500,6 +522,24 @@ public class MonsterCardPlayer {
             monsterDrawPile.addToBottom(cardCopy);
 
             Hpr.info("为怪物 " + monster.name + " 添加了卡牌到抽牌堆: " + cardCopy.name);
+        }
+    }
+
+    /**
+     * UI渲染方法 (从PVP系统移植)
+     */
+    public void renderUI(SpriteBatch sb) {
+        if (battleCardPanel != null && enabled) {
+            battleCardPanel.render(sb);
+        }
+    }
+
+    /**
+     * UI更新方法 (从PVP系统移植)
+     */
+    public void updateUI() {
+        if (battleCardPanel != null && enabled) {
+            battleCardPanel.update();
         }
     }
 }

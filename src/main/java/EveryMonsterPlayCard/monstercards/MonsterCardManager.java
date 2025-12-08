@@ -51,7 +51,7 @@ public class MonsterCardManager {
     }
 
     /**
-     * 禁用指定怪物的出牌系统
+     * 为怪物禁用出牌系统
      */
     public void disableMonster(AbstractMonster monster) {
         if (monster == null) {
@@ -62,6 +62,40 @@ public class MonsterCardManager {
         if (cardPlayer != null) {
             cardPlayer.disable();
             Hpr.info("已禁用怪物 " + monster.name + " 的出牌系统");
+        }
+    }
+
+    /**
+     * 渲染所有启用出牌系统的怪物的UI
+     */
+    public void renderUI(SpriteBatch sb) {
+        if (AbstractDungeon.getCurrRoom() == null ||
+            AbstractDungeon.getCurrRoom().monsters == null) {
+            return;
+        }
+
+        for (AbstractMonster monster : AbstractDungeon.getCurrRoom().monsters.monsters) {
+            MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
+            if (cardPlayer != null && cardPlayer.isEnabled()) {
+                cardPlayer.renderUI(sb);
+            }
+        }
+    }
+
+    /**
+     * 更新所有启用出牌系统的怪物的UI
+     */
+    public void updateUI() {
+        if (AbstractDungeon.getCurrRoom() == null ||
+            AbstractDungeon.getCurrRoom().monsters == null) {
+            return;
+        }
+
+        for (AbstractMonster monster : AbstractDungeon.getCurrRoom().monsters.monsters) {
+            MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
+            if (cardPlayer != null && cardPlayer.isEnabled()) {
+                cardPlayer.updateUI();
+            }
         }
     }
 
@@ -93,7 +127,7 @@ public class MonsterCardManager {
             for (AbstractMonster monster : AbstractDungeon.getCurrRoom().monsters.monsters) {
                 MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
                 if (cardPlayer != null && cardPlayer.isEnabled()) {
-                    cardPlayer.update();
+                    cardPlayer.updateUI();
                 }
             }
         }
@@ -109,7 +143,7 @@ public class MonsterCardManager {
 
         MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
         if (cardPlayer != null && cardPlayer.isEnabled()) {
-            cardPlayer.render(sb);
+            cardPlayer.renderUI(sb);
         }
     }
 
