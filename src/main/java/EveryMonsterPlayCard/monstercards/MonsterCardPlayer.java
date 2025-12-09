@@ -4,6 +4,7 @@ import EveryMonsterPlayCard.monstercards.cards.MonsterAttackCard;
 import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
 import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
 import EveryMonsterPlayCard.utils.Hpr;
+import EveryMonsterPlayCard.monstercards.actions.executeMonsterCardAction;
 import EveryMonsterPlayCard.ui.BattleUI.*;
 import EveryMonsterPlayCard.core.LocalEventBus;
 import EveryMonsterPlayCard.core.events.*;
@@ -463,7 +464,7 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 执行怪物的卡牌效果（使用游戏原生Action系统，模仿原版怪物）
+     * 执行怪物的卡牌效果（使用游戏原生Action系统）
      */
     private void executeMonsterCard(AbstractCard card) {
         if (card == null || monster == null) {
@@ -485,20 +486,14 @@ public class MonsterCardPlayer {
                 return;
             }
 
-            // 在调用卡牌之前，设置卡牌的拥有者怪物
-            if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
-                ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
-            }
-
-            // 添加出牌动画效果
-            playCardAnimation(card, targetPlayer);
-            // 直接调用卡牌的use方法
-            card.use(targetPlayer, monster);
-
-            Hpr.info("怪物 " + monster.name + " 执行了卡牌: " + card.name);
+            // 使用Action系统执行卡牌，避免直接调用导致的动画冲突
+            executeMonsterCardAction action = new executeMonsterCardAction(card, targetPlayer, monster);
+            AbstractDungeon.actionManager.addToBottom(action);
 
             // 将用过的卡牌加入弃牌堆
             monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
+
+            Hpr.info("怪物 " + monster.name + " 通过Action系统执行卡牌: " + card.name);
 
         } catch (Exception e) {
             Hpr.info("怪物 " + monster.name + " 执行卡牌时出错: " + e.getMessage());
@@ -801,22 +796,4 @@ public class MonsterCardPlayer {
     public int getCurrentEnergy() {
         return currentEnergy;
     }
-    /**
-     * 播放卡牌出牌动画
-     */
-    private void playCardAnimation(AbstractCard card, AbstractPlayer targetPlayer) {
-        try {
-            // 创建卡牌动画，让卡牌从怪物头顶移动到目标位置
-            card.fadingOut = true;
-            card.target_x = targetPlayer.drawX;
-            card.target_y = targetPlayer.drawY;
-            card.targetDrawScale = 0.5f;
-
-            Hpr.info("为怪物 " + monster.name + " 的卡牌 " + card.name + " 添加出牌动画");
-
-        } catch (Exception e) {
-            Hpr.info("创建卡牌动画时出错: " + e.getMessage());
-        }
-    }
-
 }
