@@ -112,8 +112,16 @@ public class everyMonsterPlayCard implements
             logger.info("Mod disabled, skipping battle start processing");
             return;
         }
-        // At battle start, enable card system for all monsters
 
+        // 确保是在战斗房间
+        if (!(room instanceof MonsterRoom || room instanceof MonsterRoomElite)) {
+            logger.info("Not a battle room, skipping monster card system initialization");
+            return;
+        }
+
+        // At battle start, enable card system for all monsters
+        MonsterCardManager.getInstance().enableRoomMonsters();
+        logger.info("Enabled monster card system for all monsters in battle start");
     }
 
 

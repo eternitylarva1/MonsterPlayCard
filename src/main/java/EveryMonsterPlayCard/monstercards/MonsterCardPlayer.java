@@ -562,14 +562,13 @@ public class MonsterCardPlayer {
                     // 检测当前卡牌是否被hover
                     boolean isHovered = isCardHovered(card, cardX, cardY);
 
-                    // 设置卡牌缩放
+                    // 设置卡牌缩放和fade状态
                     if (isHovered) {
                         // hover状态：更大缩放，不透明
                         card.targetDrawScale = 0.6f;
                         card.drawScale = 0.6f;
                         card.transparency = 1.0f;
                         card.targetTransparency = 1.0f;
-                        card.fadingOut = false;
                     } else {
                         // 非hover状态：正常缩放，半透明
                         card.targetDrawScale = SHOW_SCALE;
@@ -577,6 +576,9 @@ public class MonsterCardPlayer {
                         card.transparency = 0.8f;
                         card.targetTransparency = 0.8f;
                     }
+
+                    // 重要：确保显示的卡牌不会自动消失
+                    card.fadingOut = false;
 
                     // 调用透明度更新（使用PVP系统的方式）
                     updateCardTransparency(card);
@@ -643,21 +645,78 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 渲染头顶卡牌（显示抽牌堆）- 改进版，实时更新位置
+     * 渲染头顶卡牌（显示抽牌堆）- 优化版，避免每帧重复更新
      */
     public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {
         if (displayedCards != null && !displayedCards.isEmpty()) {
-            // 每次渲染都更新位置（PVP系统的方式）
-            updateCardDisplay();
+            // 只在需要时更新位置和状态，避免每帧更新
+            updateCardStates();
 
             // 渲染所有卡牌
             for (AbstractCard card : displayedCards) {
                 if (card != null) {
+                    // 确保卡牌不会消失
+                    card.fadingOut = false;
                     card.render(sb);
                 }
             }
         } else {
             Hpr.info("MonsterCardPlayer.render() called but no cards to render for monster: " + monster.name);
+        }
+    }
+
+    /**
+     * 更新卡牌状态（简化版，不移动位置只更新状态）
+     */
+    private void updateCardStates() {
+        if (displayedCards == null || displayedCards.isEmpty() || monster == null) {
+            return;
+        }
+
+        // 计算当前应该的位置
+        float xCenter = monster.drawX;
+        float yCenter = monster.drawY + monster.hb_h + CARD_DISPLAY_HEIGHT;
+        final float SHOW_SCALE = 0.4f;
+        int xOffset = getXOffsetById(displayedCards.size() - 1);
+
+        // 只更新状态，不重复计算位置（如果位置已经正确）
+        for (int i = 0; i < displayedCards.size(); i++) {
+            AbstractCard card = displayedCards.get(i);
+            if (card != null) {
+                float cardX = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                float cardY = yCenter;
+
+                // 只在位置有偏移时才更新
+                if (Math.abs(card.current_x - cardX) > 1.0f || Math.abs(card.current_y - cardY) > 1.0f) {
+                    card.current_x = cardX;
+                    card.current_y = cardY;
+                    card.target_x = cardX;
+                    card.target_y = cardY;
+                }
+
+                // 检测hover状态
+                boolean isHovered = isCardHovered(card, cardX, cardY);
+
+                // 更新缩放和透明度
+                if (isHovered) {
+                    card.targetDrawScale = 0.6f;
+                    card.drawScale = 0.6f;
+                    card.transparency = 1.0f;
+                    card.targetTransparency = 1.0f;
+                } else {
+                    card.targetDrawScale = SHOW_SCALE;
+                    card.drawScale = SHOW_SCALE;
+                    card.transparency = 0.8f;
+                    card.targetTransparency = 0.8f;
+                }
+
+                // 更新透明度
+                updateCardTransparency(card);
+                card.update();
+                card.applyPowers();
+
+                xOffset++;
+            }
         }
     }
 
