@@ -15,13 +15,7 @@ public class CardCostPatch {
         @SpirePrefixPatch
         public static void fix(AbstractCard __instance) {
             // 检查是否是怪物卡牌（通过卡牌ID或类型判断）
-            if (isMonsterCard(__instance)) {
-                // 设置适当的费用（最低1费）
-                if (__instance.cost == 0) {
-                    __instance.cost = 1;
-                    __instance.costForTurn = 1;
-                }
-            }
+
         }
     }
 

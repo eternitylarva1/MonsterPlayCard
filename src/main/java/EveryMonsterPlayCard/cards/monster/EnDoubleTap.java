@@ -10,7 +10,8 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.AbstractPower;
-import com.megacrit.cardcrawl.powers.DoubleTapPower;
+import EveryMonsterPlayCard.powers.cardpowers.EnDoubleTapPower;
+import EveryMonsterPlayCard.monstercards.actions.MonsterApplyPowerAction;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,8 @@ public class EnDoubleTap extends AbstractMonsterCard {
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
-        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction((AbstractCreature)m, (AbstractCreature)m, (AbstractPower)new DoubleTapPower((AbstractCreature)m, this.magicNumber), this.magicNumber));
+        AbstractPower doubleTapPower = new EnDoubleTapPower((AbstractCreature)m, this.magicNumber);
+        addToBot(new MonsterApplyPowerAction(m, m, doubleTapPower, this.magicNumber));
     }
 
     public void upgrade() {

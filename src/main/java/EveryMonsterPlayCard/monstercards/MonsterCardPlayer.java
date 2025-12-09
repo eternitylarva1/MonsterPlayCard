@@ -303,7 +303,7 @@ public class MonsterCardPlayer {
             refreshDisplayedCards();
 
             // 创建出牌动画（使用无指定位置的构造函数，让游戏自动分散）
-            createCardPlayAnimation(drawnCard);
+
 
             // 添加0.1秒的等待间隔
             AbstractDungeon.actionManager.addToBottom(new WaitAction(0.1F));
@@ -351,7 +351,7 @@ public class MonsterCardPlayer {
     /**
      * 创建卡牌出牌动画（使用游戏原生动画系统，自动分散位置）
      */
-    private void createCardPlayAnimation(AbstractCard card) {
+    public void createCardPlayAnimation(AbstractCard card) {
         if (card == null || monster == null) {
             return;
         }

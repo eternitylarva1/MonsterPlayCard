@@ -54,6 +54,6 @@ public class CardShowChange {
      * 设置卡牌为半透明
      */
     public static void setCardSemiTransparent(AbstractCard card) {
-        changeCardAlpha(card, 0.5f);
+        changeCardAlpha(card, 0.3f);
     }
 }

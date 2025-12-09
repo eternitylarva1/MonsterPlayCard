@@ -157,65 +157,16 @@ public class CardBox {
     }
 
     //根据即将抽到的第一张牌更新意图
-    public AbstractMonster.Intent getIntent()
-    {
-        //如果没有牌的话就是unknown
-        if(shownCards.drawingCards.isEmpty())
-            return AbstractMonster.Intent.UNKNOWN;
-        //求和接下来5张牌里面的伤害总和
-        this.damageAmount = sumDamageAmount(5);
-        if(damageAmount > 0)
-            return AbstractMonster.Intent.ATTACK;
-        //获得第一张牌
-        AbstractCard firstCard = shownCards.drawingCards.get(0);
-        //判断是不是能力牌
-        if(firstCard.type == AbstractCard.CardType.POWER)
-            return AbstractMonster.Intent.BUFF;
-        //技能牌，判断是不是给自己使用的
-        if(firstCard.target == AbstractCard.CardTarget.SELF)
-        {
-            if(firstCard.baseBlock>0)
-                return AbstractMonster.Intent.DEFEND;
-            return AbstractMonster.Intent.MAGIC;
-        }
-        //判断是不是金卡或者大于1费
-        if(firstCard.rarity == AbstractCard.CardRarity.RARE ||
-            firstCard.cost>1 )
-            return AbstractMonster.Intent.STRONG_DEBUFF;
-        return AbstractMonster.Intent.DEBUFF;
-    }
 
     //对牌内容的渲染
     public void render(SpriteBatch sb)
     {
         //判断是否需要更新显示位置
-        boolean updateLocation=false;
-        if(this.belongMonster != null && (shownCards.justUpdateFlag ||
-            this.belongMonster.intent == AbstractMonster.Intent.DEBUG))
-        {
-            updateLocation = true;
-            shownCards.justUpdateFlag = false;
-            //更新意图
-            AbstractMonster.Intent tempIntent = getIntent();
-            //如果是攻击意图，需要设置对应的伤害值
-            if(tempIntent== AbstractMonster.Intent.ATTACK)
-            {
-                this.belongMonster.setMove((byte)1,tempIntent,
-                        this.damageAmount);
-                if(this.belongMonster.intent == AbstractMonster.Intent.DEBUG)
-                    this.belongMonster.createIntent();
-            }
-            else {
-                this.belongMonster.setMove((byte)1,tempIntent,-1);
-            }
-        }
-        //遍历所有需要显示的牌
+        boolean updateLocation=true;
 
+        //遍历所有需要显示的牌
         //下回合抽牌显示的数量
         int showDrawNum = Math.min(MAX_SHOW_NUM-shownCards.cardList.size(),shownCards.drawingCards.size());
-        //有圆顶的情况下不显示即将抽到的牌
-        // 注释掉SocketServer引用: hasDome检查
-            showDrawNum=0;
         int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum -1);
         //先显示要抽的牌
         for(int idCard=showDrawNum-1;idCard>=0;--idCard)
@@ -283,8 +234,7 @@ public class CardBox {
                 card.drawScale = SHOW_SCALE;
             }
 
-            //渲染这个牌
-            card.render(sb);
+
         }
     }
 

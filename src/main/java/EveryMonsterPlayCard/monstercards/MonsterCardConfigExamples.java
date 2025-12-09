@@ -1,3 +1,4 @@
+package EveryMonsterPlayCard.monstercards;
 
 import EveryMonsterPlayCard.monstercards.MonsterCardConfig;
 
@@ -20,35 +21,7 @@ public class MonsterCardConfigExamples {
      * 为LouseNormal怪物设置自定义卡牌
      * 例子：给虫子更多攻击选项
      */
-    public static void setupLouseNormalCards() {
-        try {
-            ArrayList<AbstractCard> louseCards = new ArrayList<>();
 
-            // 添加多个攻击卡牌
-            AbstractCard biteAttack = createCard("STRIKE_R", 6, AbstractCard.CardType.ATTACK, "咬击");
-            AbstractCard heavyBite = createCard("BASH", 8, AbstractCard.CardType.ATTACK, "重咬");
-
-            // 添加防御卡牌
-            AbstractCard defend = createCard("DEFEND_R", 5, AbstractCard.CardType.SKILL, "护壳");
-
-            // 添加能力卡牌
-            AbstractCard rage = createCard("RAGE", 2, AbstractCard.CardType.POWER, "狂暴");
-
-            louseCards.add(biteAttack);
-            louseCards.add(heavyBite);
-            louseCards.add(defend);
-            louseCards.add(rage);
-            louseCards.add(biteAttack); // 添加两张以便有重复
-
-            // 设置到配置中
-            MonsterCardConfig.getInstance().addCustomConfig("FuzzyLouseNormal", louseCards);
-
-            Hpr.info("已为LouseNormal设置自定义卡牌：咬击、重咬、护壳、狂暴");
-
-        } catch (Exception e) {
-            Hpr.info("设置LouseNormal卡牌时出错: " + e.getMessage());
-        }
-    }
 
     /**
      * 为JawWorm设置自定义卡牌

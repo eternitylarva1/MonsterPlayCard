@@ -1,9 +1,15 @@
 package EveryMonsterPlayCard.monstercards.actions;
 
+import EveryMonsterPlayCard.monstercards.AbstractMonsterAddFieldPatch;
+import EveryMonsterPlayCard.monstercards.MonsterCardPlayer;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.actions.utility.UseCardAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.AbstractCreature;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.powers.AbstractPower;
 import EveryMonsterPlayCard.utils.Hpr;
 
 /**
@@ -45,10 +51,24 @@ public class executeMonsterCardAction extends AbstractGameAction {
 
             // 只在第一次update时执行卡牌效果
             if (!cardUsed) {
+                // 触发怪物身上Power的onUseCard钩子（类似原版UseCardAction的构造函数逻辑）
+                if (!card.dontTriggerOnUseCard) {
+                    // 创建一个临时的UseCardAction来触发Power钩子
+                    UseCardAction tempUseCardAction = new UseCardAction(card, targetPlayer);
+                    for (AbstractPower power : owningMonster.powers) {
+                        power.onUseCard(card, tempUseCardAction);
+                    }
+                }
+
                 // 设置卡牌拥有者怪物（如果是怪物卡牌）
                 if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
                     ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(owningMonster);
                 }
+
+                MonsterCardPlayer monsterCardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(owningMonster);
+
+                // 创建卡牌使用动画
+                monsterCardPlayer.createCardPlayAnimation(this.card);
 
                 // 使用游戏原生的卡牌使用方式，通过Action系统
                 card.use(targetPlayer, owningMonster);

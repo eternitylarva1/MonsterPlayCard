@@ -1,6 +1,7 @@
 package EveryMonsterPlayCard.cards.monster;
 
 import EveryMonsterPlayCard.monstercards.actions.MonsterApplyPowerAction;
+import EveryMonsterPlayCard.powers.cardpowers.EnFlameBarrierPower;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.actions.common.GainBlockAction;
@@ -12,7 +13,6 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.AbstractPower;
-import com.megacrit.cardcrawl.powers.FlameBarrierPower;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.combat.FlameBarrierEffect;
 
@@ -40,7 +40,7 @@ public class EnFlameBarrier extends AbstractMonsterCard {
         addToBot(new GainBlockAction((AbstractCreature)m, (AbstractCreature)m, this.block));
 
         // 添加火焰壁垒效果（反击）
-        AbstractPower flameBarrierPower = new FlameBarrierPower((AbstractCreature)m, this.magicNumber);
+        AbstractPower flameBarrierPower = new EnFlameBarrierPower((AbstractCreature)m, this.magicNumber);
         addToBot(new MonsterApplyPowerAction(m, m, flameBarrierPower, this.magicNumber));
     }
 

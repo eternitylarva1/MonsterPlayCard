@@ -34,9 +34,7 @@ public class EnAnger extends AbstractMonsterCard {
         this.baseDamage = 6;
         this.damage = this.baseDamage;
 
-        // 对于怪物卡牌，所有卡牌都是0费且无能量消耗
-        this.cost = 0;
-        this.costForTurn = 0;
+
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
