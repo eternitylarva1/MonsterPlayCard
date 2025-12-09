@@ -293,11 +293,17 @@ public class MonsterCardPlayer {
             }
         }
 
-        // 从抽牌堆抽一张牌
-        AbstractCard drawnCard = monsterDrawPile.getTopCard();
+        // 从左边第一张牌开始出牌（最左边的卡牌）
+        AbstractCard drawnCard = getLeftmostCard();
         if (drawnCard != null) {
-            // 移除顶牌
-            monsterDrawPile.removeTopCard();
+            // 从抽牌堆移除对应的牌
+            removeCardFromDrawPile(drawnCard);
+
+            // 创建动画效果的原卡牌副本
+            AbstractCard animationCard = drawnCard.makeStatEquivalentCopy();
+
+            // 创建出牌动画
+            createCardPlayAnimation(animationCard);
 
             // 刷新显示的牌列表（显示抽牌堆）
             refreshDisplayedCards();
@@ -312,7 +318,70 @@ public class MonsterCardPlayer {
             hasPlayedCardThisTurn = true;
             cardsPlayedThisTurn++;
 
-            Hpr.info("怪物 " + monster.name + " 回合开始打出了: " + drawnCard.name);
+            Hpr.info("怪物 " + monster.name + " 回合开始打出了（最左边）: " + drawnCard.name);
+        }
+    }
+
+    /**
+     * 获取最左边的卡牌（即将打出的第一张牌）
+     */
+    private AbstractCard getLeftmostCard() {
+        if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
+            return null;
+        }
+
+        // 获取最左边的卡牌（抽牌堆底部的牌，索引0）
+        AbstractCard leftmostCard = monsterDrawPile.group.get(0);
+        if (leftmostCard != null) {
+            Hpr.info("获取最左边卡牌: " + leftmostCard.name + " for monster: " + monster.name);
+        }
+        return leftmostCard;
+    }
+
+    /**
+     * 从抽牌堆移除指定的卡牌
+     */
+    private void removeCardFromDrawPile(AbstractCard cardToRemove) {
+        if (monsterDrawPile != null && cardToRemove != null) {
+            monsterDrawPile.removeCard(cardToRemove);
+            Hpr.info("从抽牌堆移除卡牌: " + cardToRemove.name + " for monster: " + monster.name);
+        }
+    }
+
+    /**
+     * 创建卡牌出牌动画（简化版，使用游戏原生方法）
+     */
+    private void createCardPlayAnimation(AbstractCard card) {
+        if (card == null || monster == null) {
+            return;
+        }
+
+        try {
+            AbstractPlayer targetPlayer = AbstractDungeon.player;
+            if (targetPlayer != null) {
+                // 设置卡牌起始位置（怪物头顶左边位置）
+                card.current_x = monster.drawX - AbstractCard.IMG_WIDTH * 0.2f;
+                card.current_y = monster.drawY + monster.hb_h + 150.0f * Settings.scale;
+
+                // 设置目标位置为玩家
+                card.target_x = targetPlayer.drawX;
+                card.target_y = targetPlayer.drawY;
+
+                // 设置缩放和透明度
+                card.drawScale = 0.6f;
+                card.targetDrawScale = 0.5f;
+                card.transparency = 1.0f;
+                card.targetTransparency = 0.8f;
+
+                // 设置 fadingOut 让游戏自动处理移动动画
+                card.fadingOut = true;
+
+                Hpr.info("为怪物 " + monster.name + " 创建简单卡牌动画: " + card.name +
+                    " from (" + card.current_x + "," + card.current_y + ") to (" + card.target_x + "," + card.target_y + ")");
+            }
+
+        } catch (Exception e) {
+            Hpr.info("创建卡牌动画时出错: " + e.getMessage());
         }
     }
 
@@ -344,16 +413,18 @@ public class MonsterCardPlayer {
             return;
         }
 
-        // 显示抽牌堆顶部的最多5张牌
+        // 显示抽牌堆的前最多5张牌（从左边开始，即将打出的牌）
         int maxDisplay = Math.min(5, monsterDrawPile.size());
         Hpr.info("Displaying " + maxDisplay + " cards for monster: " + monster.name);
 
-        for (int i = monsterDrawPile.size() - maxDisplay; i < monsterDrawPile.size(); i++) {
+        // 从索引0开始（最左边的牌），这样最左边的牌最先显示
+        for (int i = 0; i < maxDisplay; i++) {
             AbstractCard card = monsterDrawPile.group.get(i);
             if (card != null) {
                 AbstractCard cardCopy = card.makeStatEquivalentCopy();
                 displayedCards.add(cardCopy);
-                Hpr.info("Added card to display: " + cardCopy.name + " for monster: " + monster.name);
+                Hpr.info("Added card to display (from left): " + cardCopy.name +
+                    " [index " + i + "] for monster: " + monster.name);
             }
         }
 
