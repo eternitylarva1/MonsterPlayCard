@@ -46,6 +46,10 @@ public class BattleCardPanel {
 
     public void update()
     {
+        //修复：添加卡牌盒更新调用，确保持续跟随怪物移动
+        if (this.cardBox != null) {
+            this.cardBox.update();
+        }
         this.energyPanel.update();
         this.monsterRelicPanel.update();
         this.potionPanel.update();
