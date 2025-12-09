@@ -15,13 +15,15 @@ public class executeMonsterCardAction extends AbstractGameAction {
     private final AbstractCard card;
     private final AbstractMonster owningMonster;
     private final AbstractPlayer targetPlayer;
+    private boolean cardUsed = false;
 
     public executeMonsterCardAction(AbstractCard card, AbstractPlayer targetPlayer, AbstractMonster owningMonster) {
         this.card = card;
         this.targetPlayer = targetPlayer;
         this.owningMonster = owningMonster;
         this.actionType = ActionType.CARD_MANIPULATION;
-        this.duration = 0.1F; // 短时执行
+        this.duration = 0.3F; // 更长的持续时间，确保动画完成
+        this.startDuration = 0.3F;
     }
 
     @Override
@@ -41,20 +43,25 @@ public class executeMonsterCardAction extends AbstractGameAction {
                 return;
             }
 
-            // 设置卡牌拥有者怪物（如果是怪物卡牌）
-            if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
-                ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(owningMonster);
+            // 只在第一次update时执行卡牌效果
+            if (!cardUsed) {
+                // 设置卡牌拥有者怪物（如果是怪物卡牌）
+                if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                    ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(owningMonster);
+                }
+
+                // 使用游戏原生的卡牌使用方式，通过Action系统
+                card.use(targetPlayer, owningMonster);
+
+                Hpr.info("怪物 " + owningMonster.name + " 通过Action执行了卡牌: " + card.name);
+                cardUsed = true;
             }
-
-            // 使用游戏原生的卡牌使用方式，通过Action系统
-            card.use(targetPlayer, owningMonster);
-
-            Hpr.info("怪物 " + owningMonster.name + " 通过Action执行了卡牌: " + card.name);
 
         } catch (Exception e) {
             Hpr.info("怪物执行卡牌Action时出错: " + e.getMessage());
         }
 
-        this.isDone = true;
+        // 使用标准的tickDuration()处理Action持续时间
+        this.tickDuration();
     }
 }

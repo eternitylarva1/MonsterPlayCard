@@ -357,17 +357,18 @@ public class MonsterCardPlayer {
         }
 
         try {
-            // 先重置fadeout状态（关键：调用unfadeOut而不是设置fadingOut=true）
-            card.unfadeOut();
+            // 创建卡牌副本，避免修改原始卡牌导致显示问题
+            AbstractCard cardCopy = card.makeStatEquivalentCopy();
+            cardCopy.unfadeOut();
 
             // 使用无指定位置的构造函数，让游戏自动处理位置分散
             // ShowCardBrieflyEffect会自动检测现有效果数量并分散位置
-            ShowCardBrieflyEffect effect = new ShowCardBrieflyEffect(card);
+            ShowCardBrieflyEffect effect = new ShowCardBrieflyEffect(cardCopy);
 
             // 添加到全局动画效果列表
             AbstractDungeon.effectList.add(effect);
 
-            Hpr.info("为怪物 " + monster.name + " 创建自动分散卡牌动画: " + card.name);
+            Hpr.info("为怪物 " + monster.name + " 创建自动分散卡牌动画（使用副本）: " + card.name);
 
         } catch (Exception e) {
             Hpr.info("创建卡牌动画时出错: " + e.getMessage());
