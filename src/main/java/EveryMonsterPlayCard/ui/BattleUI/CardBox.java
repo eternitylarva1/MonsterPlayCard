@@ -91,20 +91,22 @@ public class CardBox {
             // 更新即将抽到的卡牌位置（从右向左）
             for (int idCard = showDrawNum - 1; idCard >= 0; --idCard) {
                 AbstractCard card = shownCards.drawingCards.get(idCard);
-                if (card != null && !card.fadingOut) {
+                if (card != null) {
                     card.target_y = yCenter;
                     // 修复：使用hitbox宽度作为间距而非IMG_WIDTH
                     card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
+                    // 修复：对于所有卡牌都更新，包括fadingOut的卡牌，以确保持续跟随
                     xOffset++;
                 }
             }
 
             // 更新已出卡牌的位置
             for (AbstractCard card : shownCards.cardList) {
-                if (card != null && !card.fadingOut) {
+                if (card != null) {
                     card.target_y = yCenter;
                     // 修复：使用hitbox宽度作为间距而非IMG_WIDTH
                     card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
+                    // 修复：对于所有卡牌都更新，包括fadingOut的卡牌，以确保持续跟随
                     xOffset++;
                 }
             }
@@ -266,6 +268,21 @@ public class CardBox {
                 ++xOffset;
                 card.unfadeOut();
             }
+
+            //修复：添加悬停效果检测（已出卡牌）
+            boolean isHovered = isCardHovered(card);
+            if (isHovered) {
+                // 悬停时设为完全不透明并轻微放大
+                CardShowChange.setCardFullyVisible(card);
+                card.targetDrawScale = SHOW_SCALE * 1.1f;
+                card.drawScale = card.targetDrawScale;
+            } else if (updateLocation) {
+                // 非悬停时恢复半透明和原缩放
+                CardShowChange.setCardSemiTransparent(card);
+                card.targetDrawScale = SHOW_SCALE;
+                card.drawScale = SHOW_SCALE;
+            }
+
             //渲染这个牌
             card.render(sb);
         }
