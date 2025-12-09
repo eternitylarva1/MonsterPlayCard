@@ -22,6 +22,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.vfx.cardManip.ShowCardBrieflyEffect;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -349,7 +350,7 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 创建卡牌出牌动画（简化版，使用游戏原生方法）
+     * 创建卡牌出牌动画（使用游戏原生动画系统，参考PVP系统）
      */
     private void createCardPlayAnimation(AbstractCard card) {
         if (card == null || monster == null) {
@@ -359,25 +360,21 @@ public class MonsterCardPlayer {
         try {
             AbstractPlayer targetPlayer = AbstractDungeon.player;
             if (targetPlayer != null) {
-                // 设置卡牌起始位置（怪物头顶左边位置）
-                card.current_x = monster.drawX - AbstractCard.IMG_WIDTH * 0.2f;
-                card.current_y = monster.drawY + monster.hb_h + 150.0f * Settings.scale;
+                // 先重置fadeout状态（关键：调用unfadeOut而不是设置fadingOut=true）
+                card.unfadeOut();
 
-                // 设置目标位置为玩家
-                card.target_x = targetPlayer.drawX;
-                card.target_y = targetPlayer.drawY;
+                // 使用游戏原生的ShowCardBrieflyEffect，在玩家位置显示卡牌
+                ShowCardBrieflyEffect effect = new ShowCardBrieflyEffect(
+                    card,
+                    targetPlayer.drawX,
+                    targetPlayer.drawY
+                );
 
-                // 设置缩放和透明度
-                card.drawScale = 0.6f;
-                card.targetDrawScale = 0.5f;
-                card.transparency = 1.0f;
-                card.targetTransparency = 0.8f;
+                // 添加到全局动画效果列表（关键步骤）
+                AbstractDungeon.effectList.add(effect);
 
-                // 设置 fadingOut 让游戏自动处理移动动画
-                card.fadingOut = true;
-
-                Hpr.info("为怪物 " + monster.name + " 创建简单卡牌动画: " + card.name +
-                    " from (" + card.current_x + "," + card.current_y + ") to (" + card.target_x + "," + card.target_y + ")");
+                Hpr.info("为怪物 " + monster.name + " 创建原生卡牌动画: " + card.name +
+                    " at玩家位置 (" + targetPlayer.drawX + "," + targetPlayer.drawY + ")");
             }
 
         } catch (Exception e) {
