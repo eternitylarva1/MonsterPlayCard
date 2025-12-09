@@ -13,6 +13,7 @@ import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.common.DamageAction;
 import com.megacrit.cardcrawl.actions.common.GainBlockAction;
 import com.megacrit.cardcrawl.actions.common.PlayTopCardAction;
+import com.megacrit.cardcrawl.actions.utility.WaitAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.cards.DamageInfo;
@@ -300,14 +301,14 @@ public class MonsterCardPlayer {
             // 从抽牌堆移除对应的牌
             removeCardFromDrawPile(drawnCard);
 
-            // 创建动画效果的原卡牌副本
-            AbstractCard animationCard = drawnCard.makeStatEquivalentCopy();
-
-            // 创建出牌动画
-            createCardPlayAnimation(animationCard);
-
             // 刷新显示的牌列表（显示抽牌堆）
             refreshDisplayedCards();
+
+            // 创建出牌动画（使用无指定位置的构造函数，让游戏自动分散）
+            createCardPlayAnimation(drawnCard);
+
+            // 添加0.1秒的等待间隔
+            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.1F));
 
             // 执行卡牌效果（使用游戏原生Action系统）
             executeMonsterCard(drawnCard);
@@ -350,7 +351,7 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 创建卡牌出牌动画（使用游戏原生动画系统，参考PVP系统）
+     * 创建卡牌出牌动画（使用游戏原生动画系统，自动分散位置）
      */
     private void createCardPlayAnimation(AbstractCard card) {
         if (card == null || monster == null) {
@@ -358,24 +359,17 @@ public class MonsterCardPlayer {
         }
 
         try {
-            AbstractPlayer targetPlayer = AbstractDungeon.player;
-            if (targetPlayer != null) {
-                // 先重置fadeout状态（关键：调用unfadeOut而不是设置fadingOut=true）
-                card.unfadeOut();
+            // 先重置fadeout状态（关键：调用unfadeOut而不是设置fadingOut=true）
+            card.unfadeOut();
 
-                // 使用游戏原生的ShowCardBrieflyEffect，在玩家位置显示卡牌
-                ShowCardBrieflyEffect effect = new ShowCardBrieflyEffect(
-                    card,
-                    targetPlayer.drawX,
-                    targetPlayer.drawY
-                );
+            // 使用无指定位置的构造函数，让游戏自动处理位置分散
+            // ShowCardBrieflyEffect会自动检测现有效果数量并分散位置
+            ShowCardBrieflyEffect effect = new ShowCardBrieflyEffect(card);
 
-                // 添加到全局动画效果列表（关键步骤）
-                AbstractDungeon.effectList.add(effect);
+            // 添加到全局动画效果列表
+            AbstractDungeon.effectList.add(effect);
 
-                Hpr.info("为怪物 " + monster.name + " 创建原生卡牌动画: " + card.name +
-                    " at玩家位置 (" + targetPlayer.drawX + "," + targetPlayer.drawY + ")");
-            }
+            Hpr.info("为怪物 " + monster.name + " 创建自动分散卡牌动画: " + card.name);
 
         } catch (Exception e) {
             Hpr.info("创建卡牌动画时出错: " + e.getMessage());
