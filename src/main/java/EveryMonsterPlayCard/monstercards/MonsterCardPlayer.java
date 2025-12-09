@@ -23,6 +23,7 @@ import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -467,56 +468,93 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 更新卡牌显示（按照DeadPlayer的样式）
+     * 更新卡牌显示（按照PVP系统的样式）
      */
     private void updateCardDisplay() {
         if (displayedCards != null && !displayedCards.isEmpty() && monster != null) {
-            // 计算抽牌堆位置的基准点（怪物头顶）
-            float baseX = monster.drawX;
-            float baseY = monster.drawY + monster.hb_h + CARD_DISPLAY_HEIGHT;
+            // 计算中心位置（怪物头顶）
+            float xCenter = monster.drawX;
+            float yCenter = monster.drawY + monster.hb_h + CARD_DISPLAY_HEIGHT;
 
-            // 最多显示5张牌（顶部5张）
-            int maxDisplay = Math.min(5, displayedCards.size());
+            // 卡牌显示缩放比例
+            final float SHOW_SCALE = 0.4f;
 
-            // 卡牌错开的间距
-            float cardOffset = 15.0f * Settings.scale;
-            float scaleOffset = 0.05f; // 每张牌的缩放递减
+            // 从左往右的xOffset计算
+            int xOffset = getXOffsetById(displayedCards.size() - 1);
 
-            // 从底牌开始渲染，这样顶牌会最后渲染在最前面
-            for (int i = displayedCards.size() - maxDisplay, displayCount = maxDisplay - 1; i < displayedCards.size(); i++, displayCount--) {
+            // 遍历所有显示的卡牌，从左往右排列
+            for (int i = 0; i < displayedCards.size(); i++) {
                 AbstractCard card = displayedCards.get(i);
 
                 if (card != null) {
-                    // 计算每张牌的位置（水平排列）
-                    float cardX = baseX + displayCount * cardOffset;
-                    float cardY = baseY;
+                    // 计算卡牌位置（从左往右）
+                    float cardX = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                    float cardY = yCenter;
 
-                    // 更新卡牌位置
+                    // 实时更新卡牌位置
                     card.current_x = cardX;
                     card.current_y = cardY;
                     card.target_x = cardX;
                     card.target_y = cardY;
 
-                    // 手动检测当前卡牌是否被hover
+                    // 检测当前卡牌是否被hover
                     boolean isHovered = isCardHovered(card, cardX, cardY);
 
-                    // 为非hover状态的卡牌设置默认缩放
-                    if (!isHovered) {
-                        float cardScale = 0.4f - displayCount * scaleOffset; // 从0.4缩小到0.2
-                        card.drawScale = cardScale;
-                        card.targetDrawScale = cardScale;
+                    // 设置卡牌缩放
+                    if (isHovered) {
+                        // hover状态：更大缩放，不透明
+                        card.targetDrawScale = 0.6f;
+                        card.drawScale = 0.6f;
+                        card.transparency = 1.0f;
+                        card.targetTransparency = 1.0f;
+                        card.fadingOut = false;
                     } else {
-                        // hover状态的卡牌设置更大的缩放
-                        float hoverScale = 0.6f - displayCount * scaleOffset * 0.5f; // hover时更大一些
-                        card.drawScale = hoverScale;
-                        card.targetDrawScale = hoverScale;
+                        // 非hover状态：正常缩放，半透明
+                        card.targetDrawScale = SHOW_SCALE;
+                        card.drawScale = SHOW_SCALE;
+                        card.transparency = 0.8f;
+                        card.targetTransparency = 0.8f;
                     }
+
+                    // 调用透明度更新（使用PVP系统的方式）
+                    updateCardTransparency(card);
 
                     // 更新卡牌状态
                     card.update();
                     card.applyPowers();
+
+                    xOffset++;
                 }
             }
+        }
+    }
+
+    /**
+     * 根据当前是第几个牌来计算偏移量（从PVP系统移植）
+     */
+    private int getXOffsetById(int idCard) {
+        // 计算向左最多能放置的id
+        int maxSet = (int)(monster.drawX / (AbstractCard.IMG_WIDTH * 0.4f)) - 1;
+        if (maxSet > idCard)
+            return -idCard;
+        return -maxSet;
+    }
+
+    /**
+     * 更新卡牌透明度（从PVP系统移植）
+     */
+    private void updateCardTransparency(AbstractCard card) {
+        if (card == null) {
+            return;
+        }
+
+        try {
+            // 使用反射调用updateTransparency方法
+            java.lang.reflect.Method transparencyMethod = AbstractCard.class.getDeclaredMethod("updateTransparency");
+            transparencyMethod.setAccessible(true);
+            transparencyMethod.invoke(card);
+        } catch (Exception e) {
+            Hpr.info("更新卡牌透明度时出错: " + e.getMessage());
         }
     }
 
@@ -543,11 +581,14 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 渲染头顶卡牌（显示抽牌堆）
+     * 渲染头顶卡牌（显示抽牌堆）- 改进版，实时更新位置
      */
     public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {
         if (displayedCards != null && !displayedCards.isEmpty()) {
-            Hpr.info("MonsterCardPlayer.render() called, rendering " + displayedCards.size() + " cards for monster: " + monster.name);
+            // 每次渲染都更新位置（PVP系统的方式）
+            updateCardDisplay();
+
+            // 渲染所有卡牌
             for (AbstractCard card : displayedCards) {
                 if (card != null) {
                     card.render(sb);
@@ -656,8 +697,7 @@ public class MonsterCardPlayer {
      */
     public void renderUI(SpriteBatch sb) {
         if (battleCardPanel != null && enabled) {
-            Hpr.info("MonsterCardPlayer.renderUI() called for monster: " + monster.name);
-            battleCardPanel.render(sb);
+           battleCardPanel.render(sb);
         } else {
             Hpr.info("MonsterCardPlayer.renderUI() called but battleCardPanel is null or not enabled for monster: " + monster.name);
         }
