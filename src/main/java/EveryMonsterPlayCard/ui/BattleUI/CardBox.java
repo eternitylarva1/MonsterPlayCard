@@ -64,8 +64,33 @@ public class CardBox {
     public void update() {
         // 频繁更新位置以跟随怪物移动
         updateCardPositions();
-        // 注意：具体的卡牌target_x/target_y更新在render()中处理
-        // 这样可以保持与PVP系统的一致性
+
+        // 更新所有显示卡牌的位置（修复：使用hitbox宽度作为间距）
+        if (shownCards != null) {
+            int showDrawNum = Math.min(MAX_SHOW_NUM - shownCards.cardList.size(), shownCards.drawingCards.size());
+            int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum - 1);
+
+            // 更新即将抽到的卡牌位置（从右向左）
+            for (int idCard = showDrawNum - 1; idCard >= 0; --idCard) {
+                AbstractCard card = shownCards.drawingCards.get(idCard);
+                if (card != null && !card.fadingOut) {
+                    card.target_y = yCenter;
+                    // 修复：使用hitbox宽度作为间距而非IMG_WIDTH
+                    card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
+                    xOffset++;
+                }
+            }
+
+            // 更新已出卡牌的位置
+            for (AbstractCard card : shownCards.cardList) {
+                if (card != null && !card.fadingOut) {
+                    card.target_y = yCenter;
+                    // 修复：使用hitbox宽度作为间距而非IMG_WIDTH
+                    card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
+                    xOffset++;
+                }
+            }
+        }
     }
 
     //根据当前是第几个牌来计算当前的偏移量
@@ -173,7 +198,7 @@ public class CardBox {
             {
                 card.current_y = yCenter;
                 card.target_y = yCenter;
-                card.target_x = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
                 card.current_x = card.target_x;
                 //更新卡牌的缩放大小
                 card.targetDrawScale = SHOW_SCALE;
@@ -191,7 +216,7 @@ public class CardBox {
                 //更新卡牌的位置
                 card.current_y = yCenter;
                 card.target_y = yCenter;
-                card.target_x = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
+                card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
                 card.current_x = card.target_x;
                 //更新卡牌的缩放大小
                 card.targetDrawScale = SHOW_SCALE;
