@@ -59,6 +59,24 @@ public class CardBox {
     }
 
     /**
+     * 检查卡牌是否被鼠标悬停
+     */
+    private boolean isCardHovered(AbstractCard card) {
+        float mouseX = InputHelper.mX;
+        float mouseY = InputHelper.mY;
+
+        float cardWidth = card.hb.width * card.drawScale;
+        float cardHeight = card.hb.height * card.drawScale;
+        float cardLeft = card.current_x - cardWidth / 2.0f;
+        float cardRight = card.current_x + cardWidth / 2.0f;
+        float cardTop = card.current_y + cardHeight / 2.0f;
+        float cardBottom = card.current_y - cardHeight / 2.0f;
+
+        return mouseX >= cardLeft && mouseX <= cardRight &&
+               mouseY >= cardBottom && mouseY <= cardTop;
+    }
+
+    /**
      * 持续更新卡牌位置以跟随怪物移动
      */
     public void update() {
@@ -96,8 +114,17 @@ public class CardBox {
     //根据当前是第几个牌来计算当前的偏移量
     int getXOffsetById(int idCard)
     {
-        //计算向左最多能放置的id
-        int maxSet = (int)(xCenter / (AbstractCard.IMG_WIDTH * SHOW_SCALE)) - 1;
+        //修复：使用hitbox宽度作为间距计算基准
+        //获取一个参考卡牌来计算间距（假设所有卡牌规格相同）
+        AbstractCard referenceCard = null;
+        if (shownCards != null && !shownCards.drawingCards.isEmpty()) {
+            referenceCard = shownCards.drawingCards.get(0);
+        } else if (shownCards != null && !shownCards.cardList.isEmpty()) {
+            referenceCard = shownCards.cardList.get(0);
+        }
+
+        float cardWidth = referenceCard != null ? referenceCard.hb.width * SHOW_SCALE : 100.0f;
+        int maxSet = (int)(xCenter / cardWidth) - 1;
         if(maxSet > idCard)
             return -idCard;
         return -maxSet;
@@ -207,6 +234,21 @@ public class CardBox {
                 //强行设置这个牌的透明度
                 CardShowChange.setCardSemiTransparent(card);
             }
+
+            //修复：添加悬停效果检测
+            boolean isHovered = isCardHovered(card);
+            if (isHovered) {
+                // 悬停时设为完全不透明并轻微放大
+                CardShowChange.setCardFullyVisible(card);
+                card.targetDrawScale = SHOW_SCALE * 1.1f;
+                card.drawScale = card.targetDrawScale;
+            } else if (updateLocation) {
+                // 非悬停时恢复半透明和原缩放
+                CardShowChange.setCardSemiTransparent(card);
+                card.targetDrawScale = SHOW_SCALE;
+                card.drawScale = SHOW_SCALE;
+            }
+
             card.render(sb);
         }
         for (AbstractCard card : shownCards.cardList) {
