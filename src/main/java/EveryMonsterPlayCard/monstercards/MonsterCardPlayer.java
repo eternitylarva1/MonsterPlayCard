@@ -272,9 +272,6 @@ public class MonsterCardPlayer {
 
         // 移除时间限制 - 卡牌持续显示
         // 卡牌现在会一直显示在怪物头顶，不会自动消失
-
-        // 更新显示卡牌的位置
-        updateCardDisplay();
     }
 
     /**
@@ -530,70 +527,6 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 更新卡牌显示（按照PVP系统的样式）
-     */
-    private void updateCardDisplay() {
-        if (displayedCards != null && !displayedCards.isEmpty() && monster != null) {
-            // 计算中心位置（怪物头顶）
-            float xCenter = monster.drawX;
-            float yCenter = monster.drawY + monster.hb_h + CARD_DISPLAY_HEIGHT;
-
-            // 卡牌显示缩放比例
-            final float SHOW_SCALE = 0.4f;
-
-            // 从左往右的xOffset计算
-            int xOffset = getXOffsetById(displayedCards.size() - 1);
-
-            // 遍历所有显示的卡牌，从左往右排列
-            for (int i = 0; i < displayedCards.size(); i++) {
-                AbstractCard card = displayedCards.get(i);
-
-                if (card != null) {
-                    // 计算卡牌位置（从左往右）
-                    float cardX = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
-                    float cardY = yCenter;
-
-                    // 实时更新卡牌位置
-                    card.current_x = cardX;
-                    card.current_y = cardY;
-                    card.target_x = cardX;
-                    card.target_y = cardY;
-
-                    // 检测当前卡牌是否被hover
-                    boolean isHovered = isCardHovered(card, cardX, cardY);
-
-                    // 设置卡牌缩放和fade状态
-                    if (isHovered) {
-                        // hover状态：更大缩放，不透明
-                        card.targetDrawScale = 0.6f;
-                        card.drawScale = 0.6f;
-                        card.transparency = 1.0f;
-                        card.targetTransparency = 1.0f;
-                    } else {
-                        // 非hover状态：正常缩放，半透明
-                        card.targetDrawScale = SHOW_SCALE;
-                        card.drawScale = SHOW_SCALE;
-                        card.transparency = 0.8f;
-                        card.targetTransparency = 0.8f;
-                    }
-
-                    // 重要：确保显示的卡牌不会自动消失
-                    card.fadingOut = false;
-
-                    // 调用透明度更新（使用PVP系统的方式）
-                    updateCardTransparency(card);
-
-                    // 更新卡牌状态
-                    card.update();
-                    card.applyPowers();
-
-                    xOffset++;
-                }
-            }
-        }
-    }
-
-    /**
      * 根据当前是第几个牌来计算偏移量（从PVP系统移植）
      */
     private int getXOffsetById(int idCard) {
@@ -645,12 +578,12 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 渲染头顶卡牌（显示抽牌堆）- 优化版，避免每帧重复更新
+     * 渲染头顶卡牌（显示抽牌堆）- 简化版，避免重复渲染
      */
     public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {
         if (displayedCards != null && !displayedCards.isEmpty()) {
-            // 只在需要时更新位置和状态，避免每帧更新
-            updateCardStates();
+            // 只更新位置和hover状态，避免复杂的重复计算
+            updateCardPositions();
 
             // 渲染所有卡牌
             for (AbstractCard card : displayedCards) {
@@ -666,54 +599,53 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 更新卡牌状态（简化版，不移动位置只更新状态）
+     * 更新卡牌位置（简化版，只做必要的位置跟随）
      */
-    private void updateCardStates() {
+    private void updateCardPositions() {
         if (displayedCards == null || displayedCards.isEmpty() || monster == null) {
             return;
         }
 
-        // 计算当前应该的位置
+        // 基本参数
         float xCenter = monster.drawX;
         float yCenter = monster.drawY + monster.hb_h + CARD_DISPLAY_HEIGHT;
         final float SHOW_SCALE = 0.4f;
         int xOffset = getXOffsetById(displayedCards.size() - 1);
 
-        // 只更新状态，不重复计算位置（如果位置已经正确）
+        // 更新每张卡牌的位置和hover状态
         for (int i = 0; i < displayedCards.size(); i++) {
             AbstractCard card = displayedCards.get(i);
             if (card != null) {
+                // 计算目标位置
                 float cardX = xCenter + xOffset * AbstractCard.IMG_WIDTH * SHOW_SCALE;
                 float cardY = yCenter;
 
-                // 只在位置有偏移时才更新
-                if (Math.abs(card.current_x - cardX) > 1.0f || Math.abs(card.current_y - cardY) > 1.0f) {
-                    card.current_x = cardX;
-                    card.current_y = cardY;
-                    card.target_x = cardX;
-                    card.target_y = cardY;
-                }
+                // 平滑移动到目标位置
+                card.current_x = cardX;
+                card.current_y = cardY;
+                card.target_x = cardX;
+                card.target_y = cardY;
+
+                // 设置基础缩放
+                card.targetDrawScale = SHOW_SCALE;
+                card.drawScale = SHOW_SCALE;
 
                 // 检测hover状态
                 boolean isHovered = isCardHovered(card, cardX, cardY);
 
-                // 更新缩放和透明度
                 if (isHovered) {
-                    card.targetDrawScale = 0.6f;
+                    // hover效果：放大，不透明
                     card.drawScale = 0.6f;
                     card.transparency = 1.0f;
                     card.targetTransparency = 1.0f;
                 } else {
-                    card.targetDrawScale = SHOW_SCALE;
-                    card.drawScale = SHOW_SCALE;
+                    // 正常效果：正常缩放，轻微透明
                     card.transparency = 0.8f;
                     card.targetTransparency = 0.8f;
                 }
 
                 // 更新透明度
                 updateCardTransparency(card);
-                card.update();
-                card.applyPowers();
 
                 xOffset++;
             }
