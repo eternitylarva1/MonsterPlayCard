@@ -76,8 +76,7 @@ public class BattleCardPanel {
     public void setEnergy(int currEnergy)
     {
         this.energyPanel.setCurrentEnergy(currEnergy);
-        // 确保能量面板立即更新显示
-        this.energyPanel.update();
+        // 移除energyPanel.update()调用，因为新的能量系统有自己的更新机制
     }
 
     /**
