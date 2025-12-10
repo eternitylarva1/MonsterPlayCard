@@ -21,10 +21,18 @@ public class BattleCardPanel {
     //玩家的药水列表
     public MonsterPotionPanel potionPanel;
 
+    // 关联的怪物（用于获取能量信息）
+    private AbstractMonster associatedMonster;
+    // 关联的 MonsterCardPlayer，用于读取能量和其他状态
+    public EveryMonsterPlayCard.monstercards.MonsterCardPlayer cardPlayer = null;
+
     public BattleCardPanel(float xCenter,
         float yCenter, CardRecorder shownCards, AbstractMonster monster
     )
     {
+        // 保存关联的怪物
+        this.associatedMonster = monster;
+
         //生成card box
         this.cardBox = new CardBox(xCenter,yCenter,shownCards,monster);
         this.energyPanel = new MonsterEnergyPanel(xCenter- Settings.WIDTH*0.1f,
@@ -33,6 +41,15 @@ public class BattleCardPanel {
         this.monsterRelicPanel = new MonsterRelicPanel();
         //更新玩家的药水列表
         this.potionPanel = new MonsterPotionPanel();
+    }
+
+    /**
+     * 设置卡牌透明度（基于能量系统）
+     */
+    public void updateCardTransparency() {
+        if (cardBox != null) {
+            cardBox.updateCardTransparency(getCurrentEnergy());
+        }
     }
 
     public void render(SpriteBatch sb)
@@ -59,6 +76,19 @@ public class BattleCardPanel {
     public void setEnergy(int currEnergy)
     {
         this.energyPanel.setCurrentEnergy(currEnergy);
+    }
+
+    /**
+     * 获取当前能量（通过MonsterCardPlayer）
+     */
+    public int getCurrentEnergy() {
+        if (associatedMonster != null) {
+            EveryMonsterPlayCard.monstercards.MonsterCardPlayer cardPlayer = EveryMonsterPlayCard.monstercards.AbstractMonsterAddFieldPatch.getMonsterCardPlayer(associatedMonster);
+            if (cardPlayer != null) {
+                return cardPlayer.getCurrentEnergy();
+            }
+        }
+        return 0; // 默认返回0
     }
 
     //初始化玩家的遗物列表

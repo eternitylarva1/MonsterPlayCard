@@ -38,6 +38,12 @@ public class MonsterEnergyPanel {
         this.currentEnergy = currentEnergy;
     }
 
+    public void updatePosition(float monsterX, float monsterY) {
+        // 基于怪物位置计算能量球位置（相对偏移）
+        this.x = monsterX - com.megacrit.cardcrawl.core.Settings.WIDTH * 0.1f;
+        this.y = monsterY + com.megacrit.cardcrawl.core.Settings.HEIGHT * 0.15f;
+    }
+
     public void update()
     {
         if(this.player == null)

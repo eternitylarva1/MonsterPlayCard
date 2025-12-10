@@ -93,6 +93,11 @@ public class MonsterCardPlayer {
             cardRecorder, monster
         );
 
+        // 初始化能量面板（修复：这行之前缺失了！）
+        if (this.battleCardPanel != null && this.battleCardPanel.energyPanel != null) {
+            this.battleCardPanel.energyPanel.init(com.megacrit.cardcrawl.dungeons.AbstractDungeon.player, 3);
+        }
+
         // 初始化事件系统
         initializeEventSystem();
 
@@ -280,7 +285,7 @@ public class MonsterCardPlayer {
      */
     private void playCardForTurn() {
         if (hasPlayedCardThisTurn) {
-            return; // 已经出过牌了
+            return; // 已经出过牌了（这个标志现在改为"回合开始"标志）
         }
 
         if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
@@ -293,32 +298,136 @@ public class MonsterCardPlayer {
             }
         }
 
-        // 从左边第一张牌开始出牌（最左边的卡牌）
-        AbstractCard drawnCard = getLeftmostCard();
-        if (drawnCard != null) {
-            // 从抽牌堆移除对应的牌
-            removeCardFromDrawPile(drawnCard);
+        // 刷新显示的牌列表
+        refreshDisplayedCards();
 
-            // 刷新显示的牌列表（显示抽牌堆）
-            refreshDisplayedCards();
+        // 智能多卡牌出牌系统
+        playMultipleCardsBasedOnEnergy();
 
-            // 创建出牌动画（使用无指定位置的构造函数，让游戏自动分散）
+        // 标记本回合已开始（每个怪物回合只调用一次）
+        hasPlayedCardThisTurn = true;
+    }
 
+    /**
+     * 基于能量系统进行智能多卡牌出牌
+     */
+    private void playMultipleCardsBasedOnEnergy() {
+        int availableEnergy = currentEnergy;
+        int cardsPlayed = 0;
 
-            // 添加0.1秒的等待间隔
-            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.1F));
+        Hpr.info("怪物 " + monster.name + " 开始智能出牌，可用能量: " + availableEnergy);
 
-            // 执行卡牌效果（使用游戏原生Action系统）
-            executeMonsterCard(drawnCard);
+        // 循环出牌直到能量不够
+        while (availableEnergy > 0 && (monsterDrawPile != null && !monsterDrawPile.isEmpty())) {
+            // 获取当前可出的最高优先级卡牌
+            AbstractCard cardToPlay = getBestPlayableCard(availableEnergy);
+
+            if (cardToPlay == null) {
+                Hpr.info("怪物 " + monster.name + " 没有足够的能量出更多牌");
+                break;
+            }
+
+            // 计算出牌后的能量
+            int cardCost = Math.max(0, cardToPlay.cost); // 确保成本不为负
+            availableEnergy -= cardCost;
+
+            // 从抽牌堆移除卡牌
+            removeCardFromDrawPile(cardToPlay);
+
+            // 添加出牌间隔
+            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.3F));
+
+            // 执行卡牌效果
+            executeMonsterCard(cardToPlay);
 
             // 发送卡牌出牌事件
-            sendCardPlayEvent(drawnCard);
+            sendCardPlayEvent(cardToPlay);
 
-            // 标记本回合已出牌
-            hasPlayedCardThisTurn = true;
+            cardsPlayed++;
             cardsPlayedThisTurn++;
 
-            Hpr.info("怪物 " + monster.name + " 回合开始打出了（最左边）: " + drawnCard.name);
+            Hpr.info("怪物 " + monster.name + " 打出第 " + cardsPlayed + " 张牌: " + cardToPlay.name +
+                    " (消耗能量: " + cardCost + ", 剩余能量: " + availableEnergy + ")");
+
+            // 刷新显示（更新透明度）
+            refreshDisplayedCards();
+        }
+
+        Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
+    }
+
+    /**
+     * 获取当前可出的最高优先级卡牌
+     */
+    private AbstractCard getBestPlayableCard(int availableEnergy) {
+        AbstractCard bestCard = null;
+        int bestPriority = -1;
+
+        for (AbstractCard card : monsterDrawPile.group) {
+            if (canPlayCard(card, availableEnergy)) {
+                int priority = getCardPriority(card);
+
+                // 优先级更高的卡牌，或者优先级相同但成本更低（更经济）
+                if (priority > bestPriority ||
+                    (priority == bestPriority && bestCard != null && card.cost < bestCard.cost)) {
+                    bestCard = card;
+                    bestPriority = priority;
+                }
+            }
+        }
+
+        return bestCard;
+    }
+
+    /**
+     * 检查是否可以打出某张牌
+     */
+    private boolean canPlayCard(AbstractCard card, int availableEnergy) {
+        // 检查能量是否足够
+        int cardCost = Math.max(0, card.cost);
+        if (cardCost > availableEnergy) {
+            return false;
+        }
+
+        // 检查目标是否有效（如果需要目标）
+        if (card.target == AbstractCard.CardTarget.ENEMY) {
+            // 需要敌人目标，检查玩家是否有效
+            if (AbstractDungeon.player == null || AbstractDungeon.player.isDead || AbstractDungeon.player.isEscaping) {
+                return false;
+            }
+        }
+
+        // 可以添加更多条件检查，比如状态要求等
+        return true;
+    }
+
+    /**
+     * 获取卡牌优先级（数值越高优先级越高）
+     */
+    private int getCardPriority(AbstractCard card) {
+        // 检查是否是怪物卡牌并有自定义优先级
+        if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+            EveryMonsterPlayCard.cards.monster.AbstractMonsterCard monsterCard =
+                (EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card;
+
+            // 获取当前手牌作为参考
+            java.util.ArrayList<AbstractCard> currentHand = new java.util.ArrayList<>(monsterDrawPile.group);
+            return monsterCard.getPriority(currentHand);
+        }
+
+        // 默认优先级基于卡牌类型
+        switch (card.type) {
+            case ATTACK:
+                return 50;
+            case SKILL:
+                return 30;
+            case POWER:
+                return 70; // Power类优先级最高
+            case CURSE:
+            case STATUS:
+                return 10;
+            default:
+                return 20;
         }
     }
 
@@ -757,6 +866,12 @@ public class MonsterCardPlayer {
      */
     public void updateUI() {
         if (battleCardPanel != null && enabled) {
+            // 更新能量球位置跟随怪物移动
+            if (battleCardPanel.energyPanel != null && monster != null) {
+                battleCardPanel.energyPanel.updatePosition(monster.drawX, monster.drawY);
+            }
+            // 更新卡牌透明度（基于能量系统）
+            battleCardPanel.updateCardTransparency();
             battleCardPanel.update();
         }
     }

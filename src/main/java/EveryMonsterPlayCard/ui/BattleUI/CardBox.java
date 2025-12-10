@@ -59,6 +59,25 @@ public class CardBox {
     }
 
     /**
+     * 更新卡牌透明度（基于能量系统）
+     */
+    public void updateCardTransparency(int availableEnergy) {
+        // 更新要抽的牌的透明度
+        for (AbstractCard card : shownCards.drawingCards) {
+            if (card != null) {
+                CardShowChange.setCardAlphaByEnergy(card, availableEnergy, belongMonster);
+            }
+        }
+
+        // 更新手牌的透明度
+        for (AbstractCard card : shownCards.cardList) {
+            if (card != null) {
+                CardShowChange.setCardAlphaByEnergy(card, availableEnergy, belongMonster);
+            }
+        }
+    }
+
+    /**
      * 检查卡牌是否被鼠标悬停
      */
     private boolean isCardHovered(AbstractCard card) {
