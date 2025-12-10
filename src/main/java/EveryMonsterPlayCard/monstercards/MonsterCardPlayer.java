@@ -64,6 +64,8 @@ public class MonsterCardPlayer {
 
     // 当前能量
     private int currentEnergy = 3;
+    // 能量上限
+    private int maxEnergy = 3;
 
     // 事件驱动系统 (从PVP系统移植)
     private LocalEventBus eventBus;                           // 事件总线
@@ -95,7 +97,7 @@ public class MonsterCardPlayer {
 
         // 初始化能量面板（修复：这行之前缺失了！）
         if (this.battleCardPanel != null && this.battleCardPanel.energyPanel != null) {
-            this.battleCardPanel.energyPanel.init(com.megacrit.cardcrawl.dungeons.AbstractDungeon.player, 3);
+            this.battleCardPanel.energyPanel.init(com.megacrit.cardcrawl.dungeons.AbstractDungeon.player, maxEnergy);
         }
 
         // 初始化事件系统
@@ -237,8 +239,8 @@ public class MonsterCardPlayer {
         hasPlayedCardThisTurn = false;
         cardsPlayedThisTurn = 0;
 
-        // 重置能量（每个回合开始时重置为3点能量）
-        setEnergy(3);
+        // 回合开始时自动补充能量到上限
+        refillEnergyToMax();
 
         // 发送回合开始事件
         sendTurnStartEvent();
@@ -284,7 +286,7 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 为当前回合出牌
+     * 为当前回合出牌（修改为分离的动画和使用流程）
      */
     private void playCardForTurn() {
         if (hasPlayedCardThisTurn) {
@@ -304,11 +306,76 @@ public class MonsterCardPlayer {
         // 刷新显示的牌列表
         refreshDisplayedCards();
 
-        // 智能多卡牌出牌系统
-        playMultipleCardsBasedOnEnergy();
+        // 分离的卡牌动画和使用流程
+        playCardsWithAnimation();
 
         // 标记本回合已开始（每个怪物回合只调用一次）
         hasPlayedCardThisTurn = true;
+    }
+
+    /**
+     * 分离的卡牌动画和使用流程
+     * 顺序：怪物回合开始-第一张卡牌打出动画-第一张卡牌使用-第二张卡牌打出动画-第二张卡牌使用...
+     */
+    private void playCardsWithAnimation() {
+        int availableEnergy = currentEnergy;
+        int cardsPlayed = 0;
+
+        Hpr.info("怪物 " + monster.name + " 开始分离式出牌流程，可用能量: " + availableEnergy);
+
+        // 循环出牌直到能量不够
+        while (availableEnergy > 0 && (monsterDrawPile != null && !monsterDrawPile.isEmpty())) {
+            // 获取当前可出的最高优先级卡牌
+            AbstractCard cardToPlay = getBestPlayableCard(availableEnergy);
+
+            if (cardToPlay == null) {
+                Hpr.info("怪物 " + monster.name + " 没有足够的能量出更多牌");
+                break;
+            }
+
+            // 计算出牌后的能量
+            int cardCost = Math.max(0, cardToPlay.cost); // 确保成本不为负
+            
+            // 重要：在出牌前再次检查能量是否足够
+            if (cardCost > availableEnergy) {
+                Hpr.info("怪物 " + monster.name + " 能量不足，无法打出卡牌 " + cardToPlay.name + "，需要 " + cardCost + "，可用 " + availableEnergy);
+                break;
+            }
+            
+            availableEnergy -= cardCost;
+
+            // 从抽牌堆移除卡牌
+            removeCardFromDrawPile(cardToPlay);
+
+            // 步骤1：打出卡牌动画
+            createCardPlayAnimation(cardToPlay);
+
+            // 添加动画等待时间
+            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.5F));
+
+            // 步骤2：使用卡牌效果
+            executeMonsterCard(cardToPlay);
+
+            // 发送卡牌出牌事件
+            sendCardPlayEvent(cardToPlay);
+
+            cardsPlayed++;
+            cardsPlayedThisTurn++;
+
+            Hpr.info("怪物 " + monster.name + " 打出第 " + cardsPlayed + " 张牌: " + cardToPlay.name +
+                    " (消耗能量: " + cardCost + ", 剩余能量: " + availableEnergy + ")");
+
+            // 添加出牌间隔
+            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.3F));
+
+            // 刷新显示（更新透明度）
+            refreshDisplayedCards();
+        }
+
+        // 更新当前能量值（重要：确保能量消耗被正确记录）
+        setEnergy(availableEnergy);
+
+        Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
     }
 
     /**
@@ -384,6 +451,7 @@ public class MonsterCardPlayer {
         // 检查能量是否足够
         int cardCost = Math.max(0, card.cost);
         if (cardCost > availableEnergy) {
+            Hpr.info("怪物 " + monster.name + " 无法打出卡牌 " + card.name + "，能量不足：需要 " + cardCost + "，可用 " + availableEnergy);
             return false;
         }
 
@@ -391,10 +459,12 @@ public class MonsterCardPlayer {
         if (card.target == AbstractCard.CardTarget.ENEMY) {
             // 需要敌人目标，检查玩家是否有效
             if (AbstractDungeon.player == null || AbstractDungeon.player.isDead || AbstractDungeon.player.isEscaping) {
+                Hpr.info("怪物 " + monster.name + " 无法打出卡牌 " + card.name + "，目标无效");
                 return false;
             }
         }
 
+        Hpr.info("怪物 " + monster.name + " 可以打出卡牌 " + card.name + "，能量足够：需要 " + cardCost + "，可用 " + availableEnergy);
         // 可以添加更多条件检查，比如状态要求等
         return true;
     }
@@ -510,8 +580,8 @@ public class MonsterCardPlayer {
             return;
         }
 
-        // 显示抽牌堆的前最多5张牌（从左边开始，即将打出的牌）
-        int maxDisplay = Math.min(5, monsterDrawPile.size());
+        // 限制显示数量，避免同时展示太多牌
+        int maxDisplay = Math.min(3, monsterDrawPile.size()); // 减少到最多3张牌
         Hpr.info("Displaying " + maxDisplay + " cards for monster: " + monster.name);
 
         // 从索引0开始（最左边的牌），这样最左边的牌最先显示
@@ -888,7 +958,7 @@ public class MonsterCardPlayer {
     public void setEnergy(int newEnergy) {
         int oldEnergy = this.currentEnergy;
         this.previousEnergy = oldEnergy;
-        this.currentEnergy = Math.max(0, newEnergy); // 能量不能为负
+        this.currentEnergy = Math.max(0, Math.min(newEnergy, maxEnergy)); // 能量在0到上限之间
 
         // 发送能量更新事件
         sendEnergyUpdateEvent(oldEnergy, this.currentEnergy);
@@ -899,6 +969,51 @@ public class MonsterCardPlayer {
         }
 
         Hpr.info("怪物 " + monster.name + " 能量变化: " + oldEnergy + " -> " + this.currentEnergy);
+    }
+
+    /**
+     * 回合开始时自动补充能量到上限
+     */
+    public void refillEnergyToMax() {
+        int oldEnergy = this.currentEnergy;
+        this.currentEnergy = this.maxEnergy;
+        
+        // 发送能量更新事件
+        sendEnergyUpdateEvent(oldEnergy, this.currentEnergy);
+        
+        // 更新UI面板
+        if (battleCardPanel != null) {
+            battleCardPanel.setEnergy(this.currentEnergy);
+        }
+        
+        Hpr.info("怪物 " + monster.name + " 回合开始，能量补充到上限: " + this.currentEnergy + "/" + this.maxEnergy);
+    }
+
+    /**
+     * 设置能量上限
+     */
+    public void setMaxEnergy(int newMaxEnergy) {
+        int oldMaxEnergy = this.maxEnergy;
+        this.maxEnergy = Math.max(1, newMaxEnergy); // 能量上限至少为1
+        
+        // 如果当前能量超过新的上限，则调整当前能量
+        if (this.currentEnergy > this.maxEnergy) {
+            setEnergy(this.maxEnergy);
+        }
+        
+        // 更新UI面板的能量上限显示
+        if (battleCardPanel != null && battleCardPanel.energyPanel != null) {
+            battleCardPanel.energyPanel.masterEnergy = this.maxEnergy;
+        }
+        
+        Hpr.info("怪物 " + monster.name + " 能量上限变化: " + oldMaxEnergy + " -> " + this.maxEnergy);
+    }
+
+    /**
+     * 获取能量上限
+     */
+    public int getMaxEnergy() {
+        return maxEnergy;
     }
 
     /**
