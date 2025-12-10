@@ -346,13 +346,6 @@ public class MonsterCardPlayer {
 
             // 从抽牌堆移除卡牌
             removeCardFromDrawPile(cardToPlay);
-
-            // 步骤1：打出卡牌动画
-            createCardPlayAnimation(cardToPlay);
-
-            // 添加动画等待时间
-            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.5F));
-
             // 步骤2：使用卡牌效果
             executeMonsterCard(cardToPlay);
 
@@ -370,64 +363,16 @@ public class MonsterCardPlayer {
 
             // 刷新显示（更新透明度）
             refreshDisplayedCards();
+            setEnergy(availableEnergy);
         }
 
         // 更新当前能量值（重要：确保能量消耗被正确记录）
-        setEnergy(availableEnergy);
+
 
         Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
     }
 
-    /**
-     * 基于能量系统进行智能多卡牌出牌
-     */
-    private void playMultipleCardsBasedOnEnergy() {
-        int availableEnergy = currentEnergy;
-        int cardsPlayed = 0;
 
-        Hpr.info("怪物 " + monster.name + " 开始智能出牌，可用能量: " + availableEnergy);
-
-        // 循环出牌直到能量不够
-        while (availableEnergy > 0 && (monsterDrawPile != null && !monsterDrawPile.isEmpty())) {
-            // 获取当前可出的最高优先级卡牌
-            AbstractCard cardToPlay = getBestPlayableCard(availableEnergy);
-
-            if (cardToPlay == null) {
-                Hpr.info("怪物 " + monster.name + " 没有足够的能量出更多牌");
-                break;
-            }
-
-            // 计算出牌后的能量
-            int cardCost = Math.max(0, cardToPlay.cost); // 确保成本不为负
-            availableEnergy -= cardCost;
-
-            // 从抽牌堆移除卡牌
-            removeCardFromDrawPile(cardToPlay);
-
-            // 添加出牌间隔
-            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.3F));
-
-            // 执行卡牌效果
-            executeMonsterCard(cardToPlay);
-
-            // 发送卡牌出牌事件
-            sendCardPlayEvent(cardToPlay);
-
-            cardsPlayed++;
-            cardsPlayedThisTurn++;
-
-            Hpr.info("怪物 " + monster.name + " 打出第 " + cardsPlayed + " 张牌: " + cardToPlay.name +
-                    " (消耗能量: " + cardCost + ", 剩余能量: " + availableEnergy + ")");
-
-            // 刷新显示（更新透明度）
-            refreshDisplayedCards();
-        }
-
-        // 更新当前能量值（重要：确保能量消耗被正确记录）
-        setEnergy(availableEnergy);
-
-        Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
-    }
 
     /**
      * 获取当前可出的最高优先级卡牌（从左往右顺序）
@@ -451,7 +396,7 @@ public class MonsterCardPlayer {
         // 检查能量是否足够
         int cardCost = Math.max(0, card.cost);
         if (cardCost > availableEnergy) {
-            Hpr.info("怪物 " + monster.name + " 无法打出卡牌 " + card.name + "，能量不足：需要 " + cardCost + "，可用 " + availableEnergy);
+            // 移除详细日志输出，减少日志污染
             return false;
         }
 
@@ -464,7 +409,7 @@ public class MonsterCardPlayer {
             }
         }
 
-        Hpr.info("怪物 " + monster.name + " 可以打出卡牌 " + card.name + "，能量足够：需要 " + cardCost + "，可用 " + availableEnergy);
+        // 移除详细日志输出，减少日志污染
         // 可以添加更多条件检查，比如状态要求等
         return true;
     }
