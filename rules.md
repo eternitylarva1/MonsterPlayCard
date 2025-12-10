@@ -14,5 +14,7 @@
 
 写完代码之后使用maven进行package，如果构建失败要修复。如果成功后要git commit
 
+.SlayTheSpireLibrary\BaseMod.wiki  这里面有basemod提供的工具和钩子说明
 
+.SlayTheSpireLibrary\StSLib.wiki  这里面有stslib提供的工具和钩子说明
 

@@ -242,8 +242,7 @@ public class MonsterCardPlayer {
         hasPlayedCardThisTurn = false;
         cardsPlayedThisTurn = 0;
 
-        // 回合开始时自动补充能量到上限
-        refillEnergyToMax();
+        // 注意：能量补充现在在玩家回合开始时进行，不再在这里补充
 
         // 发送回合开始事件
         sendTurnStartEvent();

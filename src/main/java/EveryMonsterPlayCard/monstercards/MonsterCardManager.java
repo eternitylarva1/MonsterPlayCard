@@ -214,4 +214,19 @@ public class MonsterCardManager {
 
         Hpr.info("MonsterCardManager系统已完全重置");
     }
+
+    /**
+     * 为指定怪物补充能量到上限（在玩家回合开始时调用）
+     */
+    public void rechargeMonsterEnergy(AbstractMonster monster) {
+        if (monster == null) {
+            return;
+        }
+
+        MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
+        if (cardPlayer != null && cardPlayer.isEnabled()) {
+            cardPlayer.refillEnergyToMax();
+            Hpr.info("为怪物 " + monster.name + " 补充能量到上限");
+        }
+    }
 }

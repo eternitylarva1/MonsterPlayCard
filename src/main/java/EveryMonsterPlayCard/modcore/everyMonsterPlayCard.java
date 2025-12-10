@@ -13,6 +13,8 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
 import EveryMonsterPlayCard.monstercards.MonsterCardManager;
+import EveryMonsterPlayCard.monstercards.MonsterStartTurnPatch;
+import EveryMonsterPlayCard.monstercards.MonsterTurnStartPatch;
 import EveryMonsterPlayCard.utils.Hpr;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +41,13 @@ public class everyMonsterPlayCard implements
 
     public everyMonsterPlayCard() {
         BaseMod.subscribe(this);
+        
+        // 初始化玩家回合开始补丁，用于怪物能量补充
+        new MonsterStartTurnPatch();
+        
+        // 初始化怪物回合开始补丁，用于怪物出牌
+        new MonsterTurnStartPatch();
+        
         logger.info("Subscribed to BaseMod events");
     }
 

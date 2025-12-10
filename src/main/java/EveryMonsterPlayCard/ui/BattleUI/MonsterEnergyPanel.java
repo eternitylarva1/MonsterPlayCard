@@ -45,9 +45,9 @@ public class MonsterEnergyPanel {
         
         // 初始化能量球纹理
         try {
-            // 使用游戏内置的能量球纹理
-            this.orbTexture = ImageMaster.loadImage("images/ui/orb.png");
-            this.orbGlowTexture = ImageMaster.loadImage("images/ui/orbGlow.png");
+            // 使用游戏内置的玩家能量球纹理
+            this.orbTexture = ImageMaster.ENERGY_BLUE_LAYER1; // 使用蓝色能量球作为基础
+            this.orbGlowTexture = ImageMaster.ENERGY_BLUE_LAYER5; // 使用蓝色能量球光晕
         } catch (Exception e) {
             // 如果加载失败，使用备用方案
             this.orbTexture = null;
