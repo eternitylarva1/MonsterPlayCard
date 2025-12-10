@@ -36,6 +36,10 @@ public class MonsterEnergyPanel {
 
     public void setCurrentEnergy(int currentEnergy) {
         this.currentEnergy = currentEnergy;
+        // 立即更新能量球动画，确保显示变化
+        if (this.player != null) {
+            this.player.updateOrb(this.currentEnergy);
+        }
     }
 
     public void updatePosition(float monsterX, float monsterY) {

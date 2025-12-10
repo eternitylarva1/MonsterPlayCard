@@ -81,9 +81,15 @@ public class BattleCardPanel {
     }
 
     /**
-     * 获取当前能量（通过MonsterCardPlayer）
+     * 获取当前能量（优先使用直接引用，回退到通过字段获取）
      */
     public int getCurrentEnergy() {
+        // 优先使用直接引用的cardPlayer
+        if (this.cardPlayer != null) {
+            return this.cardPlayer.getCurrentEnergy();
+        }
+        
+        // 回退到通过字段获取
         if (associatedMonster != null) {
             EveryMonsterPlayCard.monstercards.MonsterCardPlayer cardPlayer = EveryMonsterPlayCard.monstercards.AbstractMonsterAddFieldPatch.getMonsterCardPlayer(associatedMonster);
             if (cardPlayer != null) {

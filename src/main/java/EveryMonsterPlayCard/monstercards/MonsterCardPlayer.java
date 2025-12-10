@@ -95,6 +95,9 @@ public class MonsterCardPlayer {
             cardRecorder, monster
         );
 
+        // 重要：设置cardPlayer引用，确保BattleCardPanel能正确获取能量信息
+        this.battleCardPanel.cardPlayer = this;
+
         // 初始化能量面板（修复：这行之前缺失了！）
         if (this.battleCardPanel != null && this.battleCardPanel.energyPanel != null) {
             this.battleCardPanel.energyPanel.init(com.megacrit.cardcrawl.dungeons.AbstractDungeon.player, maxEnergy);
