@@ -98,9 +98,9 @@ public class MonsterCardPlayer {
         // 重要：设置cardPlayer引用，确保BattleCardPanel能正确获取能量信息
         this.battleCardPanel.cardPlayer = this;
 
-        // 初始化能量面板（使用新的独立怪物能量系统）
+        // 初始化能量面板（使用新的怪物专用接口）
         if (this.battleCardPanel != null && this.battleCardPanel.energyPanel != null) {
-            this.battleCardPanel.energyPanel.init(maxEnergy);
+            this.battleCardPanel.energyPanel.init(this.monster, maxEnergy);
         }
 
         // 初始化事件系统

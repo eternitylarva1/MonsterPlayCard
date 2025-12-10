@@ -1,19 +1,22 @@
 package EveryMonsterPlayCard.ui.BattleUI;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.MathHelper;
+import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-//怪物专用能量框 - 完全独立于玩家系统
+//敌人的能量框 - 重新设计为独立系统，不依赖玩家
 public class MonsterEnergyPanel {
 
+    //关联的怪物
+    public AbstractMonster monster = null;
     //当前的能量信息
     public int currentEnergy = 0;
     //最大的能量
@@ -25,48 +28,48 @@ public class MonsterEnergyPanel {
     float fontScale = 1.f;
     
     // 能量球动画相关
-    private float energyTimer = 0.0f;
-    private float energyScale = 1.0f;
+    private float orbScale = 1.0f;
+    private float orbAlpha = 1.0f;
+    private float orbTimer = 0.0f;
     private boolean energyChanged = false;
     
     // 能量球纹理
-    private static Texture energyOrbTexture = null;
-    private static TextureRegion energyOrbRegion = null;
+    private Texture orbTexture;
+    private Texture orbGlowTexture;
+    private Hitbox orbHitbox;
 
-    public MonsterEnergyPanel(float x,float y)
+    public MonsterEnergyPanel(float x, float y)
     {
         this.x = x;
         this.y = y;
         
         // 初始化能量球纹理
-        if (energyOrbTexture == null) {
-            try {
-                energyOrbTexture = ImageMaster.loadImage("images/ui/orb.png");
-                energyOrbRegion = new TextureRegion(energyOrbTexture);
-            } catch (Exception e) {
-                // 如果加载失败，使用备用方案
-                energyOrbTexture = null;
-                energyOrbRegion = null;
-            }
+        try {
+            // 使用游戏内置的能量球纹理
+            this.orbTexture = ImageMaster.loadImage("images/ui/orb.png");
+            this.orbGlowTexture = ImageMaster.loadImage("images/ui/orbGlow.png");
+        } catch (Exception e) {
+            // 如果加载失败，使用备用方案
+            this.orbTexture = null;
+            this.orbGlowTexture = null;
         }
+        
+        // 初始化碰撞箱
+        this.orbHitbox = new Hitbox(x, y, 64.0f * Settings.scale, 64.0f * Settings.scale);
     }
 
-    public void init(int masterEnergy)
+    public void init(AbstractMonster monster, int masterEnergy)
     {
+        this.monster = monster;
         this.masterEnergy = masterEnergy;
         this.currentEnergy = masterEnergy; // 初始化为满能量
-        this.energyChanged = true;
     }
 
     public void setCurrentEnergy(int currentEnergy) {
-        int oldEnergy = this.currentEnergy;
-        this.currentEnergy = Math.max(0, Math.min(currentEnergy, masterEnergy));
-        
-        // 如果能量发生变化，触发动画
-        if (oldEnergy != this.currentEnergy) {
+        if (this.currentEnergy != currentEnergy) {
+            this.currentEnergy = currentEnergy;
             this.energyChanged = true;
-            this.energyTimer = 0.0f;
-            this.energyScale = 1.2f; // 能量变化时稍微放大
+            this.orbTimer = 0.0f; // 重置动画计时器
         }
     }
 
@@ -74,78 +77,110 @@ public class MonsterEnergyPanel {
         // 基于怪物位置计算能量球位置（相对偏移）
         this.x = monsterX - Settings.WIDTH * 0.1f;
         this.y = monsterY + Settings.HEIGHT * 0.15f;
+        
+        // 更新碰撞箱位置
+        if (this.orbHitbox != null) {
+            this.orbHitbox.move(this.x, this.y);
+        }
     }
 
     public void update()
     {
-        // 更新能量球动画
-        if (this.energyChanged) {
-            this.energyTimer += Gdx.graphics.getDeltaTime();
-            
-            // 能量变化动画：从1.2f缩放回1.0f
-            if (this.energyTimer < 0.3f) {
-                this.energyScale = MathHelper.scaleLerpSnap(this.energyScale, 1.0f);
-            } else {
-                this.energyScale = 1.0f;
-                this.energyChanged = false;
-                this.energyTimer = 0.0f;
-            }
-        }
-        
-        // 如果字体正处于放大状态，对字体大小做一下更新
+        // 更新字体动画
         if(this.fontScale > 1.f)
         {
             this.fontScale = MathHelper.scaleLerpSnap(this.fontScale,1.f);
+        }
+        
+        // 更新能量球动画
+        updateOrbAnimation();
+        
+        // 更新碰撞箱
+        if (this.orbHitbox != null) {
+            this.orbHitbox.update();
+        }
+    }
+    
+    private void updateOrbAnimation()
+    {
+        // 能量变化时的动画效果
+        if (this.energyChanged) {
+            this.orbTimer += com.badlogic.gdx.Gdx.graphics.getDeltaTime();
+            
+            // 缩放动画
+            if (this.orbTimer < 0.3f) {
+                this.orbScale = 1.0f + 0.2f * (1.0f - this.orbTimer / 0.3f);
+            } else {
+                this.orbScale = 1.0f;
+                this.energyChanged = false;
+            }
+            
+            // 透明度动画
+            if (this.currentEnergy > 0) {
+                this.orbAlpha = 1.0f;
+            } else {
+                this.orbAlpha = 0.5f + 0.5f * (float)Math.sin(this.orbTimer * 5.0f);
+            }
         }
     }
 
     public void render(SpriteBatch sb)
     {
         // 渲染能量球背景
-        renderEnergyOrb(sb);
+        renderOrbBackground(sb);
         
+        // 渲染能量球
+        renderOrb(sb);
+        
+        // 渲染能量文字
+        renderEnergyText(sb);
+    }
+    
+    private void renderOrbBackground(SpriteBatch sb)
+    {
+        if (this.orbGlowTexture != null) {
+            sb.setColor(1.0f, 1.0f, 1.0f, this.orbAlpha * 0.3f);
+            sb.draw(this.orbGlowTexture,
+                   this.x - 32.0f * Settings.scale,
+                   this.y - 32.0f * Settings.scale,
+                   64.0f * Settings.scale,
+                   64.0f * Settings.scale);
+            sb.setColor(Color.WHITE);
+        }
+    }
+    
+    private void renderOrb(SpriteBatch sb)
+    {
+        if (this.orbTexture != null) {
+            // 根据能量状态设置颜色
+            if (this.currentEnergy > 0) {
+                sb.setColor(1.0f, 1.0f, 1.0f, this.orbAlpha);
+            } else {
+                sb.setColor(0.7f, 0.7f, 0.7f, this.orbAlpha);
+            }
+            
+            sb.draw(this.orbTexture,
+                   this.x - 32.0f * Settings.scale * this.orbScale,
+                   this.y - 32.0f * Settings.scale * this.orbScale,
+                   64.0f * Settings.scale * this.orbScale,
+                   64.0f * Settings.scale * this.orbScale);
+            sb.setColor(Color.WHITE);
+        }
+    }
+    
+    private void renderEnergyText(SpriteBatch sb)
+    {
         // 准备用于渲染的文字
         String energyString = this.currentEnergy + "/" + this.masterEnergy;
         
         // 使用游戏默认字体
-        BitmapFont font = FontHelper.cardTitleFont;
+        BitmapFont font = FontHelper.cardDescFont_N;
+        font.getData().setScale(this.fontScale);
         
-        font.getData().setScale(this.fontScale * Settings.scale);
+        // 根据能量状态设置文字颜色
+        Color textColor = this.currentEnergy > 0 ? Color.WHITE : new Color(0.7f, 0.7f, 0.7f, 1.0f);
         
         // 把文字渲染在中间
-        FontHelper.renderFontCentered(sb, font, energyString, this.x, this.y, Color.WHITE);
-    }
-    
-    /**
-     * 渲染能量球
-     */
-    private void renderEnergyOrb(SpriteBatch sb) {
-        float orbSize = 80.0f * Settings.scale * this.energyScale;
-        
-        // 如果有自定义纹理，使用自定义纹理
-        if (energyOrbRegion != null) {
-            sb.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-            sb.draw(energyOrbRegion,
-                   this.x - orbSize / 2.0f,
-                   this.y - orbSize / 2.0f,
-                   orbSize,
-                   orbSize);
-        } else {
-            // 备用方案：绘制简单的圆形能量球
-            sb.setColor(this.currentEnergy > 0 ? Color.YELLOW : Color.GRAY);
-            sb.draw(ImageMaster.WHITE_SQUARE_IMG,
-                   this.x - orbSize / 2.0f,
-                   this.y - orbSize / 2.0f,
-                   orbSize,
-                   orbSize);
-            
-            // 绘制边框
-            sb.setColor(Color.WHITE);
-            sb.draw(ImageMaster.WHITE_SQUARE_IMG,
-                   this.x - orbSize / 2.0f - 2.0f,
-                   this.y - orbSize / 2.0f - 2.0f,
-                   orbSize + 4.0f,
-                   orbSize + 4.0f);
-        }
+        FontHelper.renderFontCentered(sb, font, energyString, this.x, this.y, textColor);
     }
 }

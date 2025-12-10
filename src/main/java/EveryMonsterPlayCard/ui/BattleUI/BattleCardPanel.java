@@ -76,7 +76,7 @@ public class BattleCardPanel {
     public void setEnergy(int currEnergy)
     {
         this.energyPanel.setCurrentEnergy(currEnergy);
-        // 移除energyPanel.update()调用，因为新的能量系统有自己的更新机制
+        // 新的MonsterEnergyPanel会自动处理动画，不需要手动调用update
     }
 
     /**
