@@ -107,7 +107,7 @@ mvn clean compile
 ### 1. SlLibrary
 Located at `.SlayTheSpireLibrary/`, this directory contains:
 - **Decompiled game code** in `com/` - Always reference this first to understand game mechanics
-- **Documentation** in `BaseMod.wiki/` and `StSLib.wiki/
+- **Documentation** in `BaseMod.wiki/` and `StSLib.wiki/`
 - **Tutorials** in `SlayTheSpireModTutorials-master/`
 - **Localization files** in `本地化文本/` - Contains cards.json, relics.json, etc.
 - **Monster Cards** in `崩坠卡牌/` - Source cards for implementation reference

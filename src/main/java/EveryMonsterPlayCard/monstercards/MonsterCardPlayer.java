@@ -237,6 +237,9 @@ public class MonsterCardPlayer {
         hasPlayedCardThisTurn = false;
         cardsPlayedThisTurn = 0;
 
+        // 重置能量（每个回合开始时重置为3点能量）
+        setEnergy(3);
+
         // 发送回合开始事件
         sendTurnStartEvent();
 
@@ -353,30 +356,25 @@ public class MonsterCardPlayer {
             refreshDisplayedCards();
         }
 
+        // 更新当前能量值（重要：确保能量消耗被正确记录）
+        setEnergy(availableEnergy);
+
         Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
     }
 
     /**
-     * 获取当前可出的最高优先级卡牌
+     * 获取当前可出的最高优先级卡牌（从左往右顺序）
      */
     private AbstractCard getBestPlayableCard(int availableEnergy) {
-        AbstractCard bestCard = null;
-        int bestPriority = -1;
-
+        // 修改为从左往右顺序出牌，而不是基于优先级
+        // 抽牌堆的索引0就是最左边的牌
         for (AbstractCard card : monsterDrawPile.group) {
             if (canPlayCard(card, availableEnergy)) {
-                int priority = getCardPriority(card);
-
-                // 优先级更高的卡牌，或者优先级相同但成本更低（更经济）
-                if (priority > bestPriority ||
-                    (priority == bestPriority && bestCard != null && card.cost < bestCard.cost)) {
-                    bestCard = card;
-                    bestPriority = priority;
-                }
+                return card; // 返回第一个可以出的牌（从左往右）
             }
         }
 
-        return bestCard;
+        return null; // 没有可出的牌
     }
 
     /**
@@ -744,9 +742,17 @@ public class MonsterCardPlayer {
                     card.transparency = 1.0f;
                     card.targetTransparency = 1.0f;
                 } else {
-                    // 正常效果：正常缩放，轻微透明
-                    card.transparency = 0.8f;
-                    card.targetTransparency = 0.8f;
+                    // 基于能量系统设置透明度
+                    boolean canPlay = canPlayCard(card, currentEnergy);
+                    if (canPlay) {
+                        // 可以出的牌：半透明但不影响悬停效果
+                        card.transparency = 0.7f;
+                        card.targetTransparency = 0.7f;
+                    } else {
+                        // 不可出的牌：很暗的半透明
+                        card.transparency = 0.2f;
+                        card.targetTransparency = 0.2f;
+                    }
                 }
 
                 // 更新透明度

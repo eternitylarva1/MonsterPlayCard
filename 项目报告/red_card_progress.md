@@ -16,7 +16,7 @@
 | 4 | EnReaper | EnReaper | EnReaper.java | ✅ 完成 | Reaper - 伤害+击杀回复 |
 | 5 | EnInflame | EnInflame | EnInflame.java | ✅ 完成 | Inflame - 获得力量 |
 | 6 | EnUppercut | EnUppercut | EnUppercut.java | ✅ 完成 | Uppercut - 攻击+虚弱+易伤 |
-Error | 7 | EnAnger | EnAnger | EnAnger.java | ✅ 完成 | Anger - 伤害+愤怒机制 |
+| 7 | EnAnger | EnAnger | EnAnger.java | ✅ 完成 | Anger - 伤害+愤怒机制 |
 | 8 | EnArmaments | EnArmaments | EnArmaments.java | ✅ 完成 | Armaments - 获得格挡 |
 | 9 | EnBarricade | EnBarricade | EnBarricade.java | ✅ 完成 | Barricade - 路障力量 |
 | 10 | EnCarnage | MonsterAttackCard4 | MonsterAttackCard4.java | ✅ 完成 | Carnage - 2费20伤害，内在 |
