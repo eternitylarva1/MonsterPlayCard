@@ -20,6 +20,33 @@
 
 .SlayTheSpireLibrary\SlayTheSpireModTutorials-master\Tutorials\高级技巧\01 - Patch\README.md    这里是patch教程，当你在basemod和stslib中找不到对应的接口的时候，你可以通过这个来增加接口，一般建议使用Postfix和Prefix，使用pacth时候，需要你在 .SlayTheSpireLibrary\com  中找到对应的类和方法  如果需要使用InsertFix，还要找到对应的相对行数。
 
+## 📝 Patch使用要点
+
+### **Postfix vs InsertFix**
+- **Postfix**: 在方法执行后插入代码，是插入到方法最后的标准方式
+- **InsertFix**: 在方法中间特定位置插入代码，需要指定行号
+
+### **Postfix使用示例**
+```java
+@SpirePatch(
+    clz = AbstractMonster.class,
+    method = "render",
+    paramtypez = {SpriteBatch.class}
+)
+class AbstractMonsterRenderPatch {
+    @SpirePostfixPatch
+    public static void postfix(AbstractMonster __instance, SpriteBatch sb) {
+        // 在render方法最后执行的代码
+        MonsterIntentRenderer.renderExtraIntent(sb, __instance);
+    }
+}
+```
+
+### **重要提醒**
+- 使用Postfix而不是loc=999来插入到方法最后
+- Postfix更稳定，不容易因为代码行数变化而失效
+- InsertFix只在确实需要在方法中间插入时使用
+
 
 ## 🚀 高效工作要点
 

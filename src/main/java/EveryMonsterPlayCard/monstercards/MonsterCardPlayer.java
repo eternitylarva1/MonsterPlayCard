@@ -1107,4 +1107,11 @@ public class MonsterCardPlayer {
     public int getCurrentEnergy() {
         return currentEnergy;
     }
+    
+    /**
+     * 获取怪物手牌（用于额外意图渲染）
+     */
+    public CardGroup getMonsterHand() {
+        return monsterHand;
+    }
 }
