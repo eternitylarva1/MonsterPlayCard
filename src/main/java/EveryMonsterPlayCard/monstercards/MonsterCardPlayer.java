@@ -570,7 +570,17 @@ public class MonsterCardPlayer {
             if (monsterDrawPile.isEmpty()) {
                 break;
             }
-            AbstractCard card = monsterDrawPile.getTopCard();
+            
+            // 修复：使用getRandomCard而不是getTopCard来确保抽到不同的牌
+            AbstractCard card = monsterDrawPile.getRandomCard(true);
+            if (card == null) {
+                // 如果getRandomCard返回null，尝试使用getTopCard作为备选
+                card = monsterDrawPile.getTopCard();
+            }
+            
+            // 重要：从抽牌堆中移除这张牌，避免重复抽取
+            monsterDrawPile.removeCard(card);
+            
             // 重要：设置卡牌的拥有怪物，确保applyPowers正确工作
             if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
                 ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
