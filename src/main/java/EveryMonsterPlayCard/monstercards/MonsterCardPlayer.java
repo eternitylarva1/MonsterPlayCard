@@ -134,7 +134,8 @@ public class MonsterCardPlayer {
         // 注册HandUpdateEvent处理器，避免"没有找到事件处理器"的警告
         eventBus.registerEvent(HandUpdateEvent.class, (event) -> {
             // 可以在这里处理手牌更新事件，目前暂时留空
-            Hpr.info("收到手牌更新事件: " + event.toString());
+            // 注释掉详细日志，避免性能问题
+            // Hpr.info("收到手牌更新事件: " + event.toString());
         });
     }
 
@@ -661,7 +662,8 @@ public class MonsterCardPlayer {
             // 设置更新标记，通知UI需要重新定位
             cardRecorder.justUpdateFlag = true;
 
-            Hpr.info("Synced " + displayedCards.size() + " cards to CardRecorder for monster: " + monster.name);
+            // 注释掉频繁的日志输出，避免性能问题
+            // Hpr.info("Synced " + displayedCards.size() + " cards to CardRecorder for monster: " + monster.name);
         }
     }
 
