@@ -50,6 +50,7 @@ public class MonsterCardPlayer {
     private float cardDisplayTimer = 0.0f;                // 卡牌显示计时器
     // 卡牌显示控制
     private boolean initialDisplaySetup = false;         // 是否已经设置初始显示
+    private int lastHandSize = -1;                     // 记录上次手牌数量，用于检测变化
 
     // 出牌控制
     private boolean enabled = false;                       // 是否启用出牌系统
@@ -605,16 +606,24 @@ public class MonsterCardPlayer {
     private void refreshDisplayedCards() {
         displayedCards.clear();
         if (monsterHand == null || monsterHand.isEmpty()) {
-            Hpr.info("No cards in hand for monster: " + monster.name);
+            // 只在手牌数量变化时输出日志，遵循性能优化原则
+            if (lastHandSize != 0) {
+                Hpr.info("怪物 " + monster.name + " 手牌为空");
+                lastHandSize = 0;
+            }
             // 同步空列表到CardRecorder
             syncCardsToRecorder();
             return;
         }
 
-        // 只在首次设置时输出详细调试信息，避免每帧都输出造成卡顿
-        if (!initialDisplaySetup) {
+        int currentHandSize = monsterHand.size();
+        boolean handSizeChanged = (lastHandSize != currentHandSize);
+        boolean isFirstSetup = !initialDisplaySetup;
+
+        // 只在手牌数量变化或首次设置时输出详细调试信息，遵循性能优化原则
+        if (handSizeChanged || isFirstSetup) {
             // 调试：首先显示手牌中的实际卡牌
-            Hpr.info("怪物 " + monster.name + " 手牌中的实际卡牌：");
+            Hpr.info("怪物 " + monster.name + " 手牌中的实际卡牌（数量: " + currentHandSize + "）：");
             for (int i = 0; i < monsterHand.group.size(); i++) {
                 AbstractCard card = monsterHand.group.get(i);
                 Hpr.info("  手牌[" + i + "] " + card.name + " (ID: " + card.cardID + ")");
@@ -635,12 +644,9 @@ public class MonsterCardPlayer {
           }
         }
 
-        // 只在首次设置时输出详细调试信息
-        if (!initialDisplaySetup) {
-            Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
-            
-            // 调试：显示当前显示的卡牌详细信息
-            Hpr.info("怪物 " + monster.name + " 当前显示的卡牌：");
+        // 只在手牌数量变化或首次设置时输出详细调试信息
+        if (handSizeChanged || isFirstSetup) {
+            Hpr.info("怪物 " + monster.name + " 当前显示的卡牌（数量: " + displayedCards.size() + "）：");
             for (int i = 0; i < displayedCards.size(); i++) {
                 AbstractCard card = displayedCards.get(i);
                 Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
@@ -653,8 +659,9 @@ public class MonsterCardPlayer {
         // 发送手牌更新事件
         sendHandUpdateEvent();
 
-        // 标记已经设置初始显示
+        // 更新状态标记
         initialDisplaySetup = true;
+        lastHandSize = currentHandSize;
     }
 
     /**
