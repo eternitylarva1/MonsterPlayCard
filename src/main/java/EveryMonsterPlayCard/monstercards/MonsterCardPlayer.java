@@ -600,11 +600,14 @@ public class MonsterCardPlayer {
             return;
         }
 
-        // 调试：首先显示手牌中的实际卡牌
-        Hpr.info("怪物 " + monster.name + " 手牌中的实际卡牌：");
-        for (int i = 0; i < monsterHand.group.size(); i++) {
-            AbstractCard card = monsterHand.group.get(i);
-            Hpr.info("  手牌[" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        // 只在首次设置时输出详细调试信息，避免每帧都输出造成卡顿
+        if (!initialDisplaySetup) {
+            // 调试：首先显示手牌中的实际卡牌
+            Hpr.info("怪物 " + monster.name + " 手牌中的实际卡牌：");
+            for (int i = 0; i < monsterHand.group.size(); i++) {
+                AbstractCard card = monsterHand.group.get(i);
+                Hpr.info("  手牌[" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+            }
         }
 
         // 显示所有手牌
@@ -621,13 +624,16 @@ public class MonsterCardPlayer {
           }
         }
 
-        Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
-        
-        // 调试：显示当前显示的卡牌详细信息
-        Hpr.info("怪物 " + monster.name + " 当前显示的卡牌：");
-        for (int i = 0; i < displayedCards.size(); i++) {
-            AbstractCard card = displayedCards.get(i);
-            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        // 只在首次设置时输出详细调试信息
+        if (!initialDisplaySetup) {
+            Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
+            
+            // 调试：显示当前显示的卡牌详细信息
+            Hpr.info("怪物 " + monster.name + " 当前显示的卡牌：");
+            for (int i = 0; i < displayedCards.size(); i++) {
+                AbstractCard card = displayedCards.get(i);
+                Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+            }
         }
 
         // 同步卡牌数据到CardRecorder以供UI使用
