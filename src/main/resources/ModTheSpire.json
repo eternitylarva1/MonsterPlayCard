@@ -3,7 +3,7 @@
   "name": "如果所有怪物都会打牌？",
   "author_list": ["Dieyou"],
   "description": "作者@b站蝴蝶是幼虫，怪物也会打牌",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "sts_version": "12-22-2020",
   "mts_version": "3.23.2",
   "dependencies": ["basemod","stslib"]
