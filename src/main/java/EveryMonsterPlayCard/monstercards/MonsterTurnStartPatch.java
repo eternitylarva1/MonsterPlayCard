@@ -28,7 +28,8 @@ public class MonsterTurnStartPatch implements PreMonsterTurnSubscriber {
                 return true;
             }
 
-            logger.info("怪物回合开始: " + monster.name);
+            // 移除频繁调用的调试信息，避免游戏卡顿
+            // 只在关键状态变化时保留调试信息
             
             // 调用MonsterCardManager的onMonsterTurnStart方法
             MonsterCardManager.getInstance().onMonsterTurnStart(monster);

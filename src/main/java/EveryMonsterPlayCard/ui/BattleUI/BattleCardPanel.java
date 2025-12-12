@@ -2,6 +2,7 @@ package EveryMonsterPlayCard.ui.BattleUI;
 
 import EveryMonsterPlayCard.ui.BattleUI.CardBox;
 import EveryMonsterPlayCard.ui.BattleUI.CardRecorder;
+import EveryMonsterPlayCard.utils.Hpr;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
@@ -59,7 +60,9 @@ public class BattleCardPanel {
      */
     public void updateCardTransparency() {
         if (cardBox != null) {
-            cardBox.updateCardTransparency(getCurrentEnergy());
+            int currentEnergy = getCurrentEnergy();
+            cardBox.setCurrentEnergy(currentEnergy);
+            cardBox.updateCardTransparency(currentEnergy);
         }
     }
     

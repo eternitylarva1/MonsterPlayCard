@@ -70,8 +70,8 @@ public class CardShowChange {
             // 可以出的牌：半透明但不影响悬停效果
             changeCardAlpha(card, 0.7f); // 比正常稍暗，但比不可出牌亮
         } else {
-            // 不可出的牌：很暗的半透明
-            changeCardAlpha(card, 0.2f);
+            // 修复：不可出的牌：提高透明度，确保可见
+            changeCardAlpha(card, 0.4f); // 从0.2f提高到0.4f，确保卡牌可见
         }
     }
 
