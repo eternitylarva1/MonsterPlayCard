@@ -45,8 +45,7 @@ public class MonsterCardPlayer {
     // 独立牌库系统
     private CardGroup monsterDrawPile;                     // 怪物抽牌堆
     private CardGroup monsterDiscardPile;                  // 怪物弃牌堆
-
-    // 当前显示的卡牌（用于显示抽牌堆）
+    // 当前显示的卡牌（用于显示手牌堆）
     private List<AbstractCard> displayedCards = new ArrayList<>();        // 当前显示在头顶的卡牌列表
     private float cardDisplayTimer = 0.0f;                // 卡牌显示计时器
 
@@ -700,7 +699,7 @@ public class MonsterCardPlayer {
     /**
      * 渲染头顶卡牌（显示抽牌堆）- 简化版，避免重复渲染
      */
-    public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {
+    public void render(com.badlogic.gdx.graphics.g2d.SpriteBatch sb) {/*
         if (displayedCards != null && !displayedCards.isEmpty()) {
             // 只更新位置和hover状态，避免复杂的重复计算
             updateCardPositions();
@@ -715,7 +714,7 @@ public class MonsterCardPlayer {
             }
         } else {
             Hpr.info("MonsterCardPlayer.render() called but no cards to render for monster: " + monster.name);
-        }
+        }*/
     }
 
     /**
@@ -889,6 +888,7 @@ public class MonsterCardPlayer {
      */
     public void updateUI() {
         if (battleCardPanel != null && enabled) {
+
             // 更新能量球位置跟随怪物移动
             if (battleCardPanel.energyPanel != null && monster != null) {
                 battleCardPanel.energyPanel.updatePosition(monster.drawX, monster.drawY);
