@@ -131,8 +131,11 @@ public class MonsterCardPlayer {
      * 注册事件监听器
      */
     private void registerEventListeners() {
-        // 这里可以注册其他组件的事件监听器
-        // 目前主要是发送事件，接收事件的功能可以后续扩展
+        // 注册HandUpdateEvent处理器，避免"没有找到事件处理器"的警告
+        eventBus.registerEvent(HandUpdateEvent.class, (event) -> {
+            // 可以在这里处理手牌更新事件，目前暂时留空
+            Hpr.info("收到手牌更新事件: " + event.toString());
+        });
     }
 
     /**
@@ -612,6 +615,13 @@ public class MonsterCardPlayer {
         }
 
         Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
+        
+        // 调试：显示当前显示的卡牌详细信息
+        Hpr.info("怪物 " + monster.name + " 当前显示的卡牌：");
+        for (int i = 0; i < displayedCards.size(); i++) {
+            AbstractCard card = displayedCards.get(i);
+            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        }
 
         // 同步卡牌数据到CardRecorder以供UI使用
         syncCardsToRecorder();
