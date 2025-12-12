@@ -600,6 +600,13 @@ public class MonsterCardPlayer {
             return;
         }
 
+        // 调试：首先显示手牌中的实际卡牌
+        Hpr.info("怪物 " + monster.name + " 手牌中的实际卡牌：");
+        for (int i = 0; i < monsterHand.group.size(); i++) {
+            AbstractCard card = monsterHand.group.get(i);
+            Hpr.info("  手牌[" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        }
+
         // 显示所有手牌
         // 从手牌中获取所有卡牌进行显示
         for (int i = 0; i < monsterHand.size(); i++) {
