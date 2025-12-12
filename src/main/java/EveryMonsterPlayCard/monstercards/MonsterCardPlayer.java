@@ -260,20 +260,8 @@ public class MonsterCardPlayer {
         // 修复：每个怪物回合开始时补充能量到上限
         refillEnergyToMax();
 
-        // 重要：在抽新手牌前，先清空上一回合的手牌
-        // 这样可以避免手牌堆积，确保每个回合都是新的手牌
-        if (monsterHand != null && !monsterHand.isEmpty()) {
-            int handSize = monsterHand.size();
-            while (!monsterHand.isEmpty()) {
-                AbstractCard card = monsterHand.getTopCard();
-                monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
-                monsterHand.removeCard(card);
-            }
-            Hpr.info("怪物 " + monster.name + " 回合开始，清空上一回合的 " + handSize + " 张手牌");
-        }
-
-        // 每回合开始时抽5张牌到手牌
-        drawCardsToHand(5);
+        // 重要：不再在这里抽牌，因为已经在玩家回合开始时抽过了
+        // 现在只负责出牌
 
         // 发送回合开始事件
         sendTurnStartEvent();
@@ -282,6 +270,34 @@ public class MonsterCardPlayer {
         playCardForTurn();
 
         Hpr.info("怪物 " + monster.name + " 回合开始，已出牌: " + hasPlayedCardThisTurn);
+    }
+
+    /**
+     * 玩家回合开始时调用（怪物抽新手牌）
+     */
+    public void onPlayerTurnStart() {
+        if (!enabled || monster == null) {
+            return;
+        }
+
+        // 重要：在玩家回合开始时清空上一回合的手牌并抽新手牌
+        // 这样可以确保玩家看到的卡牌和怪物实际手牌一致
+        
+        // 清空上一回合的手牌
+        if (monsterHand != null && !monsterHand.isEmpty()) {
+            int handSize = monsterHand.size();
+            while (!monsterHand.isEmpty()) {
+                AbstractCard card = monsterHand.getTopCard();
+                monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
+                monsterHand.removeCard(card);
+            }
+            Hpr.info("怪物 " + monster.name + " 在玩家回合开始时清空上一回合的 " + handSize + " 张手牌");
+        }
+
+        // 抽5张新手牌
+        drawCardsToHand(5);
+
+        Hpr.info("怪物 " + monster.name + " 在玩家回合开始时抽了新手牌");
     }
 
     /**

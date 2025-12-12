@@ -135,6 +135,22 @@ public class MonsterCardManager {
     }
 
     /**
+     * 处理玩家回合开始事件（怪物抽新手牌）
+     */
+    public void onPlayerTurnStart(AbstractMonster monster) {
+        if (monster == null) {
+            return;
+        }
+
+        MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
+
+        if (cardPlayer != null && cardPlayer.isEnabled()) {
+            cardPlayer.onPlayerTurnStart();
+            Hpr.info("怪物 " + monster.name + " 在玩家回合开始时抽新手牌");
+        }
+    }
+
+    /**
      * 更新所有怪物的出牌系统（主要用于卡牌显示更新）
      */
     public void update() {

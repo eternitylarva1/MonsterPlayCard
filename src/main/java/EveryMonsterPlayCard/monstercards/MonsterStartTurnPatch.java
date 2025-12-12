@@ -1,10 +1,12 @@
 package EveryMonsterPlayCard.monstercards;
 
-import basemod.BaseMod;
-import basemod.interfaces.OnPlayerTurnStartSubscriber;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+
+import basemod.BaseMod;
+import basemod.interfaces.OnPlayerTurnStartSubscriber;
 
 /**
  * Player turn start patch
@@ -21,19 +23,23 @@ public class MonsterStartTurnPatch implements OnPlayerTurnStartSubscriber {
     @Override
     public void receiveOnPlayerTurnStart() {
         try {
-            logger.info("Player turn started - Recharging monster energy");
+            logger.info("Player turn started - Recharging monster energy and drawing cards");
 
             // Get monsters from current room
             if (AbstractDungeon.getCurrRoom() != null &&
                 AbstractDungeon.getCurrRoom().monsters != null) {
 
-                // Recharge energy for all monsters
+                // For all monsters: recharge energy and draw new cards
                 for (com.megacrit.cardcrawl.monsters.AbstractMonster monster :
                         AbstractDungeon.getCurrRoom().monsters.monsters) {
 
                     if (monster != null && !monster.isDying && !monster.isEscaping) {
                         logger.info("补充怪物能量: " + monster.name);
                         MonsterCardManager.getInstance().rechargeMonsterEnergy(monster);
+                        
+                        // 重要：在玩家回合开始时让怪物抽新手牌
+                        logger.info("怪物 " + monster.name + " 在玩家回合开始时抽新手牌");
+                        MonsterCardManager.getInstance().onPlayerTurnStart(monster);
                     }
                 }
             }
