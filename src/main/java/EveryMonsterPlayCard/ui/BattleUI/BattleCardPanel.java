@@ -42,6 +42,17 @@ public class BattleCardPanel {
         //更新玩家的药水列表
         this.potionPanel = new MonsterPotionPanel();
     }
+    
+    /**
+     * 设置MonsterCardPlayer引用并更新CardBox关联
+     */
+    public void setCardPlayer(EveryMonsterPlayCard.monstercards.MonsterCardPlayer cardPlayer) {
+        this.cardPlayer = cardPlayer;
+        // 重要：同时设置CardBox的cardPlayer引用，确保预估系统能够获取能量信息
+        if (this.cardBox != null) {
+            this.cardBox.setMonsterCardPlayer(cardPlayer);
+        }
+    }
 
     /**
      * 设置卡牌透明度（基于能量系统）
@@ -49,6 +60,15 @@ public class BattleCardPanel {
     public void updateCardTransparency() {
         if (cardBox != null) {
             cardBox.updateCardTransparency(getCurrentEnergy());
+        }
+    }
+    
+    /**
+     * 更新卡牌预估透明度（基于费用预估系统）
+     */
+    public void updateCardEstimateTransparency() {
+        if (cardBox != null) {
+            cardBox.updateCardEstimateTransparency(getCurrentEnergy());
         }
     }
 
@@ -70,6 +90,9 @@ public class BattleCardPanel {
         this.energyPanel.update();
         this.monsterRelicPanel.update();
         this.potionPanel.update();
+        
+        // 添加预估透明度更新
+        updateCardEstimateTransparency();
     }
 
     //设置能量

@@ -1,2 +1,0 @@
-
-Hpr.debug("MonsterCardPlayer update called for monster: " + monster.name + ", enabled: " + enabled);

@@ -78,9 +78,6 @@ public class MonsterCardConfig {
         // 6. EnClothesline - 红色攻击卡 (2费，12伤害+虚弱)
         universalMonsterCards.add(new EnClothesline());
 
-        // 7. EnDoubleTap - 红色技能卡 (1费，双击效果)
-        universalMonsterCards.add(new EnDoubleTap());
-
         // 8. EnFeed - 红色攻击卡 (1费，10伤害+回复)
         universalMonsterCards.add(new EnFeed());
 

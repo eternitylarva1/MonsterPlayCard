@@ -3,6 +3,7 @@ package EveryMonsterPlayCard.ui.BattleUI;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import EveryMonsterPlayCard.monstercards.CardShowChange;
+import EveryMonsterPlayCard.monstercards.MonsterCardPlayer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
@@ -28,6 +29,9 @@ public class CardBox {
 
     //当前的card box所属的monster
     AbstractMonster belongMonster;
+    
+    //关联的MonsterCardPlayer，用于获取能量信息
+    MonsterCardPlayer cardPlayer;
 
     public CardBox(float xCenter, float yCenter,
        CardRecorder shownCards,AbstractMonster monster)
@@ -38,6 +42,19 @@ public class CardBox {
         this.shownCards = shownCards;
         //记录当前的box所属的monster
         this.belongMonster = monster;
+        this.cardPlayer = null;
+    }
+    
+    public CardBox(float xCenter, float yCenter,
+       CardRecorder shownCards,AbstractMonster monster, MonsterCardPlayer cardPlayer)
+    {
+        //记录传入的属性
+        this.xCenter = xCenter;
+        this.yCenter = yCenter;
+        this.shownCards = shownCards;
+        //记录当前的box所属的monster
+        this.belongMonster = monster;
+        this.cardPlayer = cardPlayer;
     }
 
     //默认的无monster的构造函数
@@ -45,6 +62,20 @@ public class CardBox {
                    CardRecorder shownCards)
     {
         this(xCenter,yCenter,shownCards,null);
+    }
+    
+    /**
+     * 获取关联的MonsterCardPlayer
+     */
+    private MonsterCardPlayer getMonsterCardPlayer() {
+        return this.cardPlayer;
+    }
+    
+    /**
+     * 设置关联的MonsterCardPlayer
+     */
+    public void setMonsterCardPlayer(MonsterCardPlayer cardPlayer) {
+        this.cardPlayer = cardPlayer;
     }
 
     /**
@@ -78,6 +109,30 @@ public class CardBox {
     }
 
     /**
+     * 更新卡牌预估透明度（基于费用预估系统）
+     * @param availableEnergy 可用能量
+     */
+    public void updateCardEstimateTransparency(int availableEnergy) {
+        if (shownCards == null) {
+            return;
+        }
+
+        // 创建预估卡牌列表（从左到右顺序）
+        java.util.List<AbstractCard> cardsToEstimate = new java.util.ArrayList<>();
+        
+        // 卡牌列表（从左到右）
+        for (int i = 0; i < shownCards.cardList.size(); i++) {
+            AbstractCard card = shownCards.cardList.get(i);
+            if (card != null) {
+                cardsToEstimate.add(card);
+            }
+        }
+
+        // 使用预估算法计算并设置透明度
+        CardShowChange.estimatePlayableCards(cardsToEstimate, availableEnergy);
+    }
+
+    /**
      * 检查卡牌是否被鼠标悬停
      */
     private boolean isCardHovered(AbstractCard card) {
@@ -105,6 +160,7 @@ public class CardBox {
         // 更新所有显示卡牌的位置（修复：使用hitbox宽度作为间距）
         if (shownCards != null) {
             int showDrawNum = Math.min(MAX_SHOW_NUM - shownCards.cardList.size(), shownCards.drawingCards.size());
+
             int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum - 1);
 
             // 更新即将抽到的卡牌位置（从右向左）
@@ -145,6 +201,7 @@ public class CardBox {
         }
 
         float cardWidth = referenceCard != null ? referenceCard.hb.width * SHOW_SCALE : 100.0f;
+
         int maxSet = (int)(xCenter / cardWidth) - 1;
         if(maxSet > idCard)
             return -idCard;
@@ -152,28 +209,6 @@ public class CardBox {
     }
 
     //获得接下来5张牌的攻击总数
-    public int sumDamageAmount(int cardNum)
-    {
-        //判断查找的牌数是否超过
-        if(cardNum > shownCards.drawingCards.size())
-        {
-            cardNum = shownCards.drawingCards.size();
-        }
-        //总的伤害数
-        int sumDamage = 0;
-        //遍历即将读取到的每个牌
-        for(int idCard=0;idCard<cardNum;++idCard)
-        {
-            //获取对应的牌
-            AbstractCard card = shownCards.drawingCards.get(idCard);
-            //判断是不是攻击牌
-            if(card.type == AbstractCard.CardType.ATTACK)
-            {
-                sumDamage += card.baseDamage;
-            }
-        }
-        return  sumDamage;
-    }
 
     //根据即将抽到的第一张牌更新意图
 
@@ -187,57 +222,25 @@ public class CardBox {
         //下回合抽牌显示的数量
         int showDrawNum = Math.min(MAX_SHOW_NUM-shownCards.cardList.size(),shownCards.drawingCards.size());
         int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum -1);
-        //先显示要抽的牌
-        for(int idCard=showDrawNum-1;idCard>=0;--idCard)
-        {
-            //当前的牌
-            AbstractCard card = shownCards.drawingCards.get(idCard);
-            //判断是否需要更新位置
-            if(updateLocation)
-            {
-                card.current_y = yCenter;
-                card.target_y = yCenter;
-                card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
-                card.current_x = card.target_x;
-                //更新卡牌的缩放大小
-                card.targetDrawScale = SHOW_SCALE;
-                card.drawScale = SHOW_SCALE;
-                ++xOffset;
-                //强行设置这个牌的透明度
-                CardShowChange.setCardSemiTransparent(card);
-            }
-
-            //修复：添加悬停效果检测
-            boolean isHovered = isCardHovered(card);
-            if (isHovered) {
-                // 悬停时设为完全不透明并轻微放大
-                CardShowChange.setCardFullyVisible(card);
-                card.targetDrawScale = SHOW_SCALE * 1.1f;
-                card.drawScale = card.targetDrawScale;
-            } else if (updateLocation) {
-                // 非悬停时恢复半透明和原缩放
-                CardShowChange.setCardSemiTransparent(card);
-                card.targetDrawScale = SHOW_SCALE;
-                card.drawScale = SHOW_SCALE;
-            }
-
-            card.render(sb);
+        // 应用预估透明度系统
+        MonsterCardPlayer cardPlayer = getMonsterCardPlayer();
+        if (cardPlayer != null) {
+            updateCardEstimateTransparency(cardPlayer.getCurrentEnergy());
         }
         for (AbstractCard card : shownCards.cardList) {
             //获取当前位置的牌
             //判断是否需要更新位置
-            if (updateLocation) {
-                //更新卡牌的位置
-                card.current_y = yCenter;
-                card.target_y = yCenter;
-                card.target_x = xCenter + xOffset * card.hb.width * SHOW_SCALE;
-                card.current_x = card.target_x;
-                //更新卡牌的缩放大小
-                card.targetDrawScale = SHOW_SCALE;
-                card.drawScale = SHOW_SCALE;
-                ++xOffset;
-                card.unfadeOut();
-            }
+            //更新卡牌的位置
+            card.current_y = yCenter;
+            card.target_y = yCenter;
+            final float calculateCardWidth=card.transparency>0.1f?card.hb.width:card.hb.width/2;
+            card.target_x = xCenter + xOffset * calculateCardWidth * SHOW_SCALE;
+            card.current_x = card.target_x;
+            //更新卡牌的缩放大小
+            card.targetDrawScale = SHOW_SCALE;
+            card.drawScale = SHOW_SCALE;
+            ++xOffset;
+           // card.unfadeOut();
 
             //修复：添加悬停效果检测（已出卡牌）
             boolean isHovered = isCardHovered(card);
@@ -247,13 +250,12 @@ public class CardBox {
                 card.targetDrawScale = SHOW_SCALE * 1.1f;
                 card.drawScale = card.targetDrawScale;
             } else if (updateLocation) {
-                // 非悬停时恢复半透明和原缩放
-                CardShowChange.setCardSemiTransparent(card);
+                // 已出卡牌保持半透明
+                //CardShowChange.setCardSemiTransparent(card);
                 card.targetDrawScale = SHOW_SCALE;
                 card.drawScale = SHOW_SCALE;
             }
-
-
+           card.render(sb);
         }
     }
 

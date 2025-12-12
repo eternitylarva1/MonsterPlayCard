@@ -146,8 +146,6 @@ public class MonsterCardManager {
         MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
         if (cardPlayer != null && cardPlayer.isEnabled()) {
             cardPlayer.renderUI(sb);
-            // 渲染头顶卡牌
-            cardPlayer.render(sb);
         }
     }
 

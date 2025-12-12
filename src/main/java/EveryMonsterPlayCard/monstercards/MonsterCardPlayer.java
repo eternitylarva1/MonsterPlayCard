@@ -96,7 +96,7 @@ public class MonsterCardPlayer {
         );
 
         // 重要：设置cardPlayer引用，确保BattleCardPanel能正确获取能量信息
-        this.battleCardPanel.cardPlayer = this;
+        this.battleCardPanel.setCardPlayer(this);
 
         // 初始化能量面板（使用新的怪物专用接口）
         if (this.battleCardPanel != null && this.battleCardPanel.energyPanel != null) {
@@ -528,7 +528,7 @@ public class MonsterCardPlayer {
         }
 
         // 限制显示数量，避免同时展示太多牌
-        int maxDisplay = Math.min(3, monsterDrawPile.size()); // 减少到最多3张牌
+        int maxDisplay = 5; // 减少到最多3张牌
         Hpr.info("Displaying " + maxDisplay + " cards for monster: " + monster.name);
 
         // 从索引0开始（最左边的牌），这样最左边的牌最先显示
@@ -710,7 +710,7 @@ public class MonsterCardPlayer {
                 if (card != null) {
                     // 确保卡牌不会消失
                     card.fadingOut = false;
-                    card.render(sb);
+                  card.render(sb);
                 }
             }
         } else {
