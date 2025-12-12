@@ -1,27 +1,30 @@
 package EveryMonsterPlayCard.modcore;
 
-import basemod.BaseMod;
-import basemod.interfaces.*;
-import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
-import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
-import com.megacrit.cardcrawl.core.CardCrawlGame;
-import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.helpers.FontHelper;
-import com.megacrit.cardcrawl.localization.*;
-import com.megacrit.cardcrawl.rooms.AbstractRoom;
-import com.megacrit.cardcrawl.rooms.MonsterRoom;
-import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
-import EveryMonsterPlayCard.monstercards.MonsterCardManager;
-import EveryMonsterPlayCard.monstercards.MonsterStartTurnPatch;
-import EveryMonsterPlayCard.monstercards.MonsterTurnStartPatch;
-import EveryMonsterPlayCard.utils.Hpr;
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
+import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
+import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.localization.PowerStrings;
+import com.megacrit.cardcrawl.localization.RelicStrings;
+import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.rooms.AbstractRoom;
+import com.megacrit.cardcrawl.rooms.MonsterRoom;
+import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
+
+import EveryMonsterPlayCard.monstercards.MonsterCardManager;
+import EveryMonsterPlayCard.monstercards.MonsterStartTurnPatch;
+import EveryMonsterPlayCard.monstercards.MonsterTurnEndPatch;
+import EveryMonsterPlayCard.monstercards.MonsterTurnStartPatch;
+import basemod.BaseMod;
+import basemod.interfaces.EditStringsSubscriber;
+import basemod.interfaces.OnStartBattleSubscriber;
+import basemod.interfaces.PostBattleSubscriber;
+import basemod.interfaces.PostDungeonInitializeSubscriber;
+import basemod.interfaces.PostInitializeSubscriber;
 
 @SpireInitializer
 public class everyMonsterPlayCard implements
@@ -47,6 +50,9 @@ public class everyMonsterPlayCard implements
         
         // 初始化怪物回合开始补丁，用于怪物出牌
         new MonsterTurnStartPatch();
+        
+        // 初始化怪物回合结束补丁，用于处理手牌
+        new MonsterTurnEndPatch();
         
         logger.info("Subscribed to BaseMod events");
     }

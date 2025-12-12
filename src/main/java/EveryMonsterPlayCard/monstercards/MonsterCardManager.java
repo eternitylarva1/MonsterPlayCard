@@ -1,8 +1,9 @@
 package EveryMonsterPlayCard.monstercards;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.monsters.AbstractMonster;
+
 import EveryMonsterPlayCard.utils.Hpr;
 
 /**
@@ -114,6 +115,22 @@ public class MonsterCardManager {
         if (cardPlayer != null && cardPlayer.isEnabled()) {
             cardPlayer.onTurnStart();
             Hpr.info("怪物回合开始触发出牌: " + monster.name);
+        }
+    }
+
+    /**
+     * 处理怪物回合结束事件
+     */
+    public void onMonsterTurnEnd(AbstractMonster monster) {
+        if (monster == null) {
+            return;
+        }
+
+        MonsterCardPlayer cardPlayer = AbstractMonsterAddFieldPatch.getMonsterCardPlayer(monster);
+
+        if (cardPlayer != null && cardPlayer.isEnabled()) {
+            cardPlayer.onTurnEnd();
+            Hpr.info("怪物回合结束处理手牌: " + monster.name);
         }
     }
 

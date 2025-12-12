@@ -1,35 +1,33 @@
 package EveryMonsterPlayCard.monstercards;
 
-import EveryMonsterPlayCard.monstercards.cards.MonsterAttackCard;
-import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
-import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
-import EveryMonsterPlayCard.utils.Hpr;
-import EveryMonsterPlayCard.monstercards.actions.executeMonsterCardAction;
-import EveryMonsterPlayCard.ui.BattleUI.*;
-import EveryMonsterPlayCard.core.LocalEventBus;
-import EveryMonsterPlayCard.core.events.*;
-import com.badlogic.gdx.Gdx;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
-import com.megacrit.cardcrawl.actions.common.DamageAction;
-import com.megacrit.cardcrawl.actions.common.GainBlockAction;
-import com.megacrit.cardcrawl.actions.common.PlayTopCardAction;
 import com.megacrit.cardcrawl.actions.utility.WaitAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.CardGroup;
-import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.vfx.cardManip.ShowCardBrieflyEffect;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import EveryMonsterPlayCard.core.LocalEventBus;
+import EveryMonsterPlayCard.core.events.CardPlayEvent;
+import EveryMonsterPlayCard.core.events.EnergyUpdateEvent;
+import EveryMonsterPlayCard.core.events.HandUpdateEvent;
+import EveryMonsterPlayCard.core.events.TurnStartEvent;
+import EveryMonsterPlayCard.monstercards.actions.executeMonsterCardAction;
+import EveryMonsterPlayCard.monstercards.cards.MonsterAttackCard;
+import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
+import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
+import EveryMonsterPlayCard.ui.BattleUI.BattleCardPanel;
+import EveryMonsterPlayCard.ui.BattleUI.CardRecorder;
+import EveryMonsterPlayCard.utils.Hpr;
 
 /**
  * MonsterCardPlayer - 改进版怪物出牌系统
@@ -45,10 +43,11 @@ public class MonsterCardPlayer {
     // 独立牌库系统
     private CardGroup monsterDrawPile;                     // 怪物抽牌堆
     private CardGroup monsterDiscardPile;                  // 怪物弃牌堆
+    private CardGroup monsterHand;                          // 怪物手牌
+
     // 当前显示的卡牌（用于显示手牌堆）
     private List<AbstractCard> displayedCards = new ArrayList<>();        // 当前显示在头顶的卡牌列表
     private float cardDisplayTimer = 0.0f;                // 卡牌显示计时器
-
     // 卡牌显示控制
     private boolean initialDisplaySetup = false;         // 是否已经设置初始显示
 
@@ -143,6 +142,7 @@ public class MonsterCardPlayer {
         // 初始化牌库
         monsterDrawPile = new CardGroup(CardGroup.CardGroupType.DRAW_PILE);
         monsterDiscardPile = new CardGroup(CardGroup.CardGroupType.DISCARD_PILE);
+        monsterHand = new CardGroup(CardGroup.CardGroupType.HAND);
 
         // 获取统一卡牌池
         ArrayList<AbstractCard> monsterCards = getUniversalCards();
@@ -156,8 +156,8 @@ public class MonsterCardPlayer {
 
         Hpr.info("怪物CardPlayer初始化完成: " + monster.name + " ，牌库包含 " + monsterDrawPile.size() + " 张卡牌");
 
-        // 初始化显示 - 战斗开始时就显示抽牌堆
-        refreshDisplayedCards();
+        // 初始化手牌 - 战斗开始时抽5张牌到手牌
+        drawCardsToHand(5);
     }
 
     /**
@@ -193,6 +193,10 @@ public class MonsterCardPlayer {
         // 添加卡牌到抽牌堆
         for (AbstractCard card : cards) {
             if (card != null) {
+                // 重要：设置卡牌的拥有怪物，确保applyPowers正确工作
+                if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                    ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
+                }
                 monsterDrawPile.addToBottom(card);
             }
         }
@@ -241,7 +245,23 @@ public class MonsterCardPlayer {
         hasPlayedCardThisTurn = false;
         cardsPlayedThisTurn = 0;
 
-        // 注意：能量补充现在在玩家回合开始时进行，不再在这里补充
+        // 修复：每个怪物回合开始时补充能量到上限
+        refillEnergyToMax();
+
+        // 重要：在抽新手牌前，先清空上一回合的手牌
+        // 这样可以避免手牌堆积，确保每个回合都是新的手牌
+        if (monsterHand != null && !monsterHand.isEmpty()) {
+            int handSize = monsterHand.size();
+            while (!monsterHand.isEmpty()) {
+                AbstractCard card = monsterHand.getTopCard();
+                monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
+                monsterHand.removeCard(card);
+            }
+            Hpr.info("怪物 " + monster.name + " 回合开始，清空上一回合的 " + handSize + " 张手牌");
+        }
+
+        // 每回合开始时抽5张牌到手牌
+        drawCardsToHand(5);
 
         // 发送回合开始事件
         sendTurnStartEvent();
@@ -250,6 +270,28 @@ public class MonsterCardPlayer {
         playCardForTurn();
 
         Hpr.info("怪物 " + monster.name + " 回合开始，已出牌: " + hasPlayedCardThisTurn);
+    }
+
+    /**
+     * 怪物回合结束时调用（处理手牌）
+     */
+    public void onTurnEnd() {
+        if (!enabled || monster == null) {
+            return;
+        }
+
+        // 将剩余手牌全部放入弃牌堆
+        if (monsterHand != null && !monsterHand.isEmpty()) {
+            int handSize = monsterHand.size();
+            while (!monsterHand.isEmpty()) {
+                AbstractCard card = monsterHand.getTopCard();
+                monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
+                monsterHand.removeCard(card);
+            }
+            Hpr.info("怪物 " + monster.name + " 回合结束，将 " + handSize + " 张手牌放入弃牌堆");
+        }
+
+        Hpr.info("怪物 " + monster.name + " 回合结束");
     }
 
     /**
@@ -277,10 +319,8 @@ public class MonsterCardPlayer {
             return;
         }
 
-        // 如果还没有设置初始显示，则进行初始化显示
-        if (!initialDisplaySetup) {
-            refreshDisplayedCards();
-        }
+        // 每次更新都刷新显示的卡牌列表
+        refreshDisplayedCards();
 
         // 移除时间限制 - 卡牌持续显示
         // 卡牌现在会一直显示在怪物头顶，不会自动消失
@@ -294,17 +334,7 @@ public class MonsterCardPlayer {
             return; // 已经出过牌了（这个标志现在改为"回合开始"标志）
         }
 
-        if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
-            // 尝试从弃牌堆重新洗牌
-            if (monsterDiscardPile != null && !monsterDiscardPile.isEmpty()) {
-                shuffleDiscardToDraw();
-            } else {
-                Hpr.info("怪物 " + monster.name + " 牌库已空，无法出牌");
-                return;
-            }
-        }
-
-        // 刷新显示的牌列表
+        // 刷新显示的牌列表（显示手牌）
         refreshDisplayedCards();
 
         // 分离的卡牌动画和使用流程
@@ -324,8 +354,8 @@ public class MonsterCardPlayer {
 
         Hpr.info("怪物 " + monster.name + " 开始分离式出牌流程，可用能量: " + availableEnergy);
 
-        // 循环出牌直到能量不够
-        while (availableEnergy > 0 && (monsterDrawPile != null && !monsterDrawPile.isEmpty())) {
+        // 循环出牌直到能量不够或手牌为空
+        while (availableEnergy > 0 && (monsterHand != null && !monsterHand.isEmpty())) {
             // 获取当前可出的最高优先级卡牌
             AbstractCard cardToPlay = getBestPlayableCard(availableEnergy);
 
@@ -345,9 +375,9 @@ public class MonsterCardPlayer {
             
             availableEnergy -= cardCost;
 
-            // 从抽牌堆移除卡牌
-            removeCardFromDrawPile(cardToPlay);
-            // 步骤2：使用卡牌效果
+            // 从手牌移除卡牌
+            removeCardFromHand(cardToPlay);
+            // 使用卡牌效果
             executeMonsterCard(cardToPlay);
 
             // 发送卡牌出牌事件
@@ -367,9 +397,6 @@ public class MonsterCardPlayer {
             setEnergy(availableEnergy);
         }
 
-        // 更新当前能量值（重要：确保能量消耗被正确记录）
-
-
         Hpr.info("怪物 " + monster.name + " 本回合共打出 " + cardsPlayed + " 张牌，剩余能量: " + availableEnergy);
     }
 
@@ -380,8 +407,8 @@ public class MonsterCardPlayer {
      */
     private AbstractCard getBestPlayableCard(int availableEnergy) {
         // 修改为从左往右顺序出牌，而不是基于优先级
-        // 抽牌堆的索引0就是最左边的牌
-        for (AbstractCard card : monsterDrawPile.group) {
+        // 手牌的索引0就是最左边的牌
+        for (AbstractCard card : monsterHand.group) {
             if (canPlayCard(card, availableEnergy)) {
                 return card; // 返回第一个可以出的牌（从左往右）
             }
@@ -462,12 +489,14 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 从抽牌堆移除指定的卡牌
+     * 从手牌移除指定的卡牌
      */
-    private void removeCardFromDrawPile(AbstractCard cardToRemove) {
-        if (monsterDrawPile != null && cardToRemove != null) {
-            monsterDrawPile.removeCard(cardToRemove);
-            Hpr.info("从抽牌堆移除卡牌: " + cardToRemove.name + " for monster: " + monster.name);
+    private void removeCardFromHand(AbstractCard cardToRemove) {
+        if (monsterHand != null && cardToRemove != null) {
+            monsterHand.removeCard(cardToRemove);
+            // 将用过的卡牌加入弃牌堆
+            monsterDiscardPile.addToBottom(cardToRemove.makeStatEquivalentCopy());
+            Hpr.info("从手牌移除卡牌: " + cardToRemove.name + " for monster: " + monster.name);
         }
     }
 
@@ -512,33 +541,60 @@ public class MonsterCardPlayer {
     }
 
     /**
-     * 刷新显示的卡牌列表（显示抽牌堆的前几张卡牌）
+     * 从抽牌堆抽牌到手牌
+     */
+    private void drawCardsToHand(int count) {
+        if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
+            // 如果抽牌堆为空，尝试从弃牌堆洗牌
+            if (monsterDiscardPile != null && !monsterDiscardPile.isEmpty()) {
+                shuffleDiscardToDraw();
+            } else {
+                Hpr.info("怪物 " + monster.name + " 牌库已空，无法抽牌");
+                return;
+            }
+        }
+
+        int actualDrawCount = Math.min(count, monsterDrawPile.size());
+        for (int i = 0; i < actualDrawCount; i++) {
+            if (monsterDrawPile.isEmpty()) {
+                break;
+            }
+            AbstractCard card = monsterDrawPile.getTopCard();
+            // 重要：设置卡牌的拥有怪物，确保applyPowers正确工作
+            if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
+            }
+            monsterHand.addToTop(card);
+            Hpr.info("怪物 " + monster.name + " 抽取手牌: " + card.name);
+        }
+
+        Hpr.info("怪物 " + monster.name + " 抽取了 " + actualDrawCount + " 张牌到手牌，当前手牌数量: " + monsterHand.size());
+    }
+
+    /**
+     * 刷新显示的卡牌列表（显示手牌）
      */
     private void refreshDisplayedCards() {
         displayedCards.clear();
-
-        Hpr.info("refreshDisplayedCards() called for monster: " + monster.name + ", drawPile size: " + (monsterDrawPile != null ? monsterDrawPile.size() : "null"));
-
-        if (monsterDrawPile == null || monsterDrawPile.isEmpty()) {
-            Hpr.info("No cards in draw pile for monster: " + monster.name);
+        if (monsterHand == null || monsterHand.isEmpty()) {
+            Hpr.info("No cards in hand for monster: " + monster.name);
             // 同步空列表到CardRecorder
             syncCardsToRecorder();
             return;
         }
 
-        // 限制显示数量，避免同时展示太多牌
-        int maxDisplay = 5; // 减少到最多3张牌
-        Hpr.info("Displaying " + maxDisplay + " cards for monster: " + monster.name);
-
-        // 从索引0开始（最左边的牌），这样最左边的牌最先显示
-        for (int i = 0; i < maxDisplay; i++) {
-            AbstractCard card = monsterDrawPile.group.get(i);
+        // 显示所有手牌
+        // 从手牌中获取所有卡牌进行显示
+        for (int i = 0; i < monsterHand.size(); i++) {
+            AbstractCard card = monsterHand.group.get(i);
             if (card != null) {
                 AbstractCard cardCopy = card.makeStatEquivalentCopy();
+                // 重要：设置卡牌的拥有怪物，确保applyPowers正确工作
+                if (cardCopy instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                    ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) cardCopy).setOwningMonster(monster);
+                }
                 displayedCards.add(cardCopy);
-                Hpr.info("Added card to display (from left): " + cardCopy.name +
-                    " [index " + i + "] for monster: " + monster.name);
-            }
+          }
         }
 
         Hpr.info("Total cards displayed for " + monster.name + ": " + displayedCards.size());
@@ -583,8 +639,7 @@ public class MonsterCardPlayer {
             }
             HandUpdateEvent event = new HandUpdateEvent(monster.hashCode(), cardIds, playerId);
             eventBus.sendEvent(event);
-            Hpr.info("发送手牌更新事件: " + event.toString());
-        }
+      }
     }
 
     /**
@@ -613,9 +668,6 @@ public class MonsterCardPlayer {
             // 使用Action系统执行卡牌，避免直接调用导致的动画冲突
             executeMonsterCardAction action = new executeMonsterCardAction(card, targetPlayer, monster);
             AbstractDungeon.actionManager.addToBottom(action);
-
-            // 将用过的卡牌加入弃牌堆
-            monsterDiscardPile.addToBottom(card.makeStatEquivalentCopy());
 
             Hpr.info("怪物 " + monster.name + " 通过Action系统执行卡牌: " + card.name);
 
@@ -810,6 +862,9 @@ public class MonsterCardPlayer {
         }
         if (monsterDiscardPile != null) {
             monsterDiscardPile.clear();
+        }
+        if (monsterHand != null) {
+            monsterHand.clear();
         }
 
         Hpr.info("怪物 " + monster.name + " CardPlayer系统已重置");

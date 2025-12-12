@@ -1,12 +1,12 @@
 package EveryMonsterPlayCard.ui.BattleUI;
 
-import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.helpers.input.InputHelper;
-import EveryMonsterPlayCard.monstercards.CardShowChange;
-import EveryMonsterPlayCard.monstercards.MonsterCardPlayer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+
+import EveryMonsterPlayCard.monstercards.CardShowChange;
+import EveryMonsterPlayCard.monstercards.MonsterCardPlayer;
 
 //这是一个用来显示牌的界面，会显示在敌人的头上。
 public class CardBox {
@@ -213,12 +213,27 @@ public class CardBox {
         //下回合抽牌显示的数量
         int showDrawNum = Math.min(MAX_SHOW_NUM-shownCards.cardList.size(),shownCards.drawingCards.size());
         int xOffset = getXOffsetById(shownCards.cardList.size() + showDrawNum -1);
+        MonsterCardPlayer cardPlayer ;
+        // 添加调试信息
+        if (shownCards.cardList.isEmpty()) {
+            cardPlayer = getMonsterCardPlayer();
+            cardPlayer.update();
+            // 如果没有卡牌，输出调试信息
+            return;
+        }
+        
         // 应用预估透明度系统
-        MonsterCardPlayer cardPlayer = getMonsterCardPlayer();
+       cardPlayer = getMonsterCardPlayer();
+        cardPlayer.update();
         if (cardPlayer != null) {
             updateCardEstimateTransparency(cardPlayer.getCurrentEnergy());
         }
+        
         for (AbstractCard card : shownCards.cardList) {
+            if (card == null) {
+                continue;
+            }
+            
             //获取当前位置的牌
             //判断是否需要更新位置
             //更新卡牌的位置
@@ -231,7 +246,18 @@ public class CardBox {
             card.targetDrawScale = SHOW_SCALE;
             card.drawScale = SHOW_SCALE;
             ++xOffset;
-           // card.unfadeOut();
+            
+            // 确保卡牌可见
+            card.fadingOut = false;
+            card.transparency = 1.0f;
+            card.targetTransparency = 1.0f;
+            
+            // 重要：在渲染前调用applyPowers，确保伤害和格挡值正确计算
+            try {
+                card.applyPowers();
+            } catch (Exception e) {
+                // 如果applyPowers失败，继续渲染卡牌
+            }
 
             //修复：添加悬停效果检测（已出卡牌）
             boolean isHovered = isCardHovered(card);
@@ -246,7 +272,7 @@ public class CardBox {
                 card.targetDrawScale = SHOW_SCALE;
                 card.drawScale = SHOW_SCALE;
             }
-           card.render(sb);
+            card.render(sb);
         }
     }
 
