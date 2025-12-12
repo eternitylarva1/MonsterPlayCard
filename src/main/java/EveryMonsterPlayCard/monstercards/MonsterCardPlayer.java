@@ -208,6 +208,13 @@ public class MonsterCardPlayer {
         monsterDrawPile.group = tempList;
 
         Hpr.info("怪物 " + monster.name + " 洗牌完成，抽牌堆包含 " + monsterDrawPile.size() + " 张卡牌");
+        
+        // 调试：打印抽牌堆中的所有卡牌名称
+        Hpr.info("怪物 " + monster.name + " 抽牌堆包含的卡牌：");
+        for (int i = 0; i < monsterDrawPile.group.size(); i++) {
+            AbstractCard card = monsterDrawPile.group.get(i);
+            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        }
     }
 
     /**
@@ -565,10 +572,17 @@ public class MonsterCardPlayer {
                 ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
             }
             monsterHand.addToTop(card);
-            Hpr.info("怪物 " + monster.name + " 抽取手牌: " + card.name);
+            Hpr.info("怪物 " + monster.name + " 抽取手牌: " + card.name + " (ID: " + card.cardID + ")");
         }
 
         Hpr.info("怪物 " + monster.name + " 抽取了 " + actualDrawCount + " 张牌到手牌，当前手牌数量: " + monsterHand.size());
+        
+        // 调试：打印手牌中的所有卡牌
+        Hpr.info("怪物 " + monster.name + " 当前手牌：");
+        for (int i = 0; i < monsterHand.group.size(); i++) {
+            AbstractCard card = monsterHand.group.get(i);
+            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        }
     }
 
     /**

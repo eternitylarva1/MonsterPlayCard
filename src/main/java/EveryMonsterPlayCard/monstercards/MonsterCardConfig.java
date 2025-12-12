@@ -1,32 +1,24 @@
 package EveryMonsterPlayCard.monstercards;
 
-import EveryMonsterPlayCard.monstercards.cards.MonsterAttackCard;
-import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
-import EveryMonsterPlayCard.monstercards.cards.MonsterPowerCard;
-import EveryMonsterPlayCard.utils.Hpr;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.megacrit.cardcrawl.cards.AbstractCard;
-import com.megacrit.cardcrawl.helpers.CardLibrary;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 
-// 新导入的怪物卡牌
-import EveryMonsterPlayCard.cards.monster.EnBash;
-import EveryMonsterPlayCard.cards.monster.EnBodySlam;
 import EveryMonsterPlayCard.cards.monster.EnBackstab;
+import EveryMonsterPlayCard.cards.monster.EnBash;
+import EveryMonsterPlayCard.cards.monster.EnBlur;
+import EveryMonsterPlayCard.cards.monster.EnBodySlam;
 import EveryMonsterPlayCard.cards.monster.EnCarnage;
 import EveryMonsterPlayCard.cards.monster.EnCleave;
 import EveryMonsterPlayCard.cards.monster.EnClothesline;
 import EveryMonsterPlayCard.cards.monster.EnDefendRed;
-import EveryMonsterPlayCard.cards.monster.EnBlur;
 import EveryMonsterPlayCard.cards.monster.EnDemonForm;
 import EveryMonsterPlayCard.cards.monster.EnDisarm;
-import EveryMonsterPlayCard.cards.monster.EnDoubleTap;
 import EveryMonsterPlayCard.cards.monster.EnEntrench;
 import EveryMonsterPlayCard.cards.monster.EnFeed;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import EveryMonsterPlayCard.utils.Hpr;
 
 /**
  * 怪物卡牌配置管理器
@@ -105,8 +97,10 @@ public class MonsterCardConfig {
         Hpr.info("统一怪物卡牌池初始化完成，包含 " + universalMonsterCards.size() + " 张卡牌");
 
         // 调试信息：显示成功创建的卡牌
-        for (AbstractCard card : universalMonsterCards) {
-            Hpr.info("成功创建卡牌: " + card.name);
+        Hpr.info("统一卡牌池包含的卡牌：");
+        for (int i = 0; i < universalMonsterCards.size(); i++) {
+            AbstractCard card = universalMonsterCards.get(i);
+            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
         }
     }
 
@@ -134,6 +128,14 @@ public class MonsterCardConfig {
         }
 
         Hpr.info("为怪物 " + monsterId + " 配置了统一卡牌池，包含 " + monsterCards.size() + " 张卡牌");
+        
+        // 调试：打印配置的卡牌
+        Hpr.info("怪物 " + monsterId + " 配置的卡牌列表：");
+        for (int i = 0; i < monsterCards.size(); i++) {
+            AbstractCard card = monsterCards.get(i);
+            Hpr.info("  [" + i + "] " + card.name + " (ID: " + card.cardID + ")");
+        }
+        
         return monsterCards;
     }
 
