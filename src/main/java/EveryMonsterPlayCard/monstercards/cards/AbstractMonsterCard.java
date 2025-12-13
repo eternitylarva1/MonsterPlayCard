@@ -142,4 +142,18 @@ public abstract class AbstractMonsterCard extends AbstractCard {
     public void upgrade() {
         // 默认实现为空，子类重写以实现升级效果
     }
+    
+    /**
+     * 获取攻击效果
+     */
+    public AbstractGameAction.AttackEffect getAttackEffect() {
+        return attackEffect;
+    }
+    
+    /**
+     * 设置攻击效果
+     */
+    public void setAttackEffect(AbstractGameAction.AttackEffect attackEffect) {
+        this.attackEffect = attackEffect;
+    }
 }
