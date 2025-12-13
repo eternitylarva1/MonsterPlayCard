@@ -1,1 +1,1 @@
-{"mcpServers":{"filesystem":{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","c:/Users/gaoming/Downloads/MonsterPlayCard-feature2"],"alwaysAllow":["list_directory","move_file","read_text_file","create_directory"]}}}
+{"mcpServers":{"filesystem":{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","c:/Users/gaoming/Downloads/MonsterPlayCard-feature2"],"alwaysAllow":["list_directory","move_file","read_text_file","create_directory","list_allowed_directories","write_file"]}}}
