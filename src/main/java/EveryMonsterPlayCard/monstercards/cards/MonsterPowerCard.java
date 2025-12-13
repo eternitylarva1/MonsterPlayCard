@@ -17,9 +17,9 @@ import com.megacrit.cardcrawl.powers.DexterityPower;
  */
 public class MonsterPowerCard extends AbstractMonsterCard {
 
-    private CardStrings cardStrings;
-    private PowerType powerType;
-    private int powerAmount;
+    protected CardStrings cardStrings;
+    protected PowerType powerType;
+    protected int powerAmount;
 
     public enum PowerType {
         STRENGTH,
@@ -96,5 +96,35 @@ public class MonsterPowerCard extends AbstractMonsterCard {
             baseMagicNumber = powerAmount;
             initializeDescription();
         }
+    }
+    
+    /**
+     * 获取力量类型
+     */
+    public PowerType getPowerType() {
+        return powerType;
+    }
+    
+    /**
+     * 设置力量类型
+     */
+    public void setPowerType(PowerType powerType) {
+        this.powerType = powerType;
+    }
+    
+    /**
+     * 获取力量数值
+     */
+    public int getPowerAmount() {
+        return powerAmount;
+    }
+    
+    /**
+     * 设置力量数值
+     */
+    public void setPowerAmount(int powerAmount) {
+        this.powerAmount = powerAmount;
+        this.magicNumber = powerAmount;
+        this.baseMagicNumber = powerAmount;
     }
 }

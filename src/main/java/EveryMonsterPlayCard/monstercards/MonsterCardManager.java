@@ -5,6 +5,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
 import EveryMonsterPlayCard.utils.Hpr;
+import EveryMonsterPlayCard.intent2card.integration.IntentToCardIntegration;
 
 /**
  * MonsterCardManager - 使用 SpireField 的怪物出牌系统管理器
@@ -17,6 +18,9 @@ public class MonsterCardManager {
 
     private MonsterCardManager() {
         // 不再使用 HashMap，直接使用 SpireField
+        
+        // 初始化意图-卡牌转换系统
+        initializeIntentToCardIntegration();
     }
 
     /**
@@ -27,6 +31,15 @@ public class MonsterCardManager {
             instance = new MonsterCardManager();
         }
         return instance;
+    }
+    
+    /**
+     * 初始化意图-卡牌转换系统
+     */
+    private void initializeIntentToCardIntegration() {
+        IntentToCardIntegration integration = IntentToCardIntegration.getInstance();
+        integration.initialize();
+        Hpr.info("MonsterCardManager已初始化意图-卡牌转换系统");
     }
 
     /**
@@ -244,6 +257,11 @@ public class MonsterCardManager {
         }
 
         Hpr.info("MonsterCardManager系统已完全重置");
+        
+        // 重置意图-卡牌转换系统
+        IntentToCardIntegration integration = IntentToCardIntegration.getInstance();
+        integration.clearAllCache();
+        Hpr.info("意图-卡牌转换系统缓存已清空");
     }
 
     /**

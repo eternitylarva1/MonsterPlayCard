@@ -77,6 +77,15 @@ public class CardBox {
     public void setMonsterCardPlayer(MonsterCardPlayer cardPlayer) {
         this.cardPlayer = cardPlayer;
     }
+    
+    /**
+     * 设置当前能量
+     */
+    public void setCurrentEnergy(int energy) {
+        if (cardPlayer != null) {
+            cardPlayer.setCurrentEnergy(energy);
+        }
+    }
 
     /**
      * 更新卡牌位置以跟随怪物移动（修复：添加持续跟随功能）

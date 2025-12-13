@@ -117,6 +117,70 @@ public class MonsterIntent {
     }
     
     /**
+     * 获取整数参数
+     */
+    public int getIntParameter(String key) {
+        Object value = this.properties.get(key);
+        if (value instanceof Integer) {
+            return (Integer) value;
+        } else if (value instanceof Number) {
+            return ((Number) value).intValue();
+        } else if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * 获取字符串参数
+     */
+    public String getStringParameter(String key) {
+        Object value = this.properties.get(key);
+        if (value != null) {
+            return value.toString();
+        }
+        return "";
+    }
+    
+    /**
+     * 获取布尔参数
+     */
+    public boolean getBooleanParameter(String key) {
+        Object value = this.properties.get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        } else if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
+        return false;
+    }
+    
+    /**
+     * 检查是否有伤害参数
+     */
+    public boolean hasDamage() {
+        return hasProperty("damage") || isAttack();
+    }
+    
+    /**
+     * 检查是否有格挡参数
+     */
+    public boolean hasBlock() {
+        return hasProperty("block") || isDefend();
+    }
+    
+    /**
+     * 检查是否有魔法数字参数
+     */
+    public boolean hasMagicNumber() {
+        return hasProperty("magicNumber") || isBuff() || isDebuff();
+    }
+    
+    /**
      * 检查是否为攻击意图
      */
     public boolean isAttack() {

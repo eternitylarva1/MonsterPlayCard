@@ -28,6 +28,7 @@ import EveryMonsterPlayCard.monstercards.cards.MonsterSkillCard;
 import EveryMonsterPlayCard.ui.BattleUI.BattleCardPanel;
 import EveryMonsterPlayCard.ui.BattleUI.CardRecorder;
 import EveryMonsterPlayCard.utils.Hpr;
+import EveryMonsterPlayCard.intent2card.integration.IntentToCardIntegration;
 
 /**
  * MonsterCardPlayer - 改进版怪物出牌系统
@@ -163,6 +164,9 @@ public class MonsterCardPlayer {
 
         // 初始化手牌 - 战斗开始时抽5张牌到手牌
         drawCardsToHand(5);
+        
+        // 初始化意图-卡牌转换系统
+        initializeIntentToCardIntegration();
     }
 
     /**
@@ -182,6 +186,38 @@ public class MonsterCardPlayer {
         }
 
         return cards;
+    }
+    
+    /**
+     * 初始化意图-卡牌转换系统
+     */
+    private void initializeIntentToCardIntegration() {
+        IntentToCardIntegration integration = IntentToCardIntegration.getInstance();
+        if (integration.isIntegrationEnabled()) {
+            // 尝试使用意图-卡牌转换系统生成卡牌
+            List<AbstractCard> generatedCards = integration.generateCardsForMonster(monster);
+            if (!generatedCards.isEmpty()) {
+                // 如果成功生成卡牌，替换现有卡牌
+                monsterDrawPile.clear();
+                for (AbstractCard card : generatedCards) {
+                    if (card != null) {
+                        // 重要：设置卡牌的拥有怪物，确保applyPowers正确工作
+                        if (card instanceof EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) {
+                            ((EveryMonsterPlayCard.cards.monster.AbstractMonsterCard) card).setOwningMonster(monster);
+                        }
+                        monsterDrawPile.addToBottom(card);
+                    }
+                }
+                
+                // 洗牌
+                ArrayList<AbstractCard> tempList = new ArrayList<>();
+                tempList.addAll(monsterDrawPile.group);
+                Collections.shuffle(tempList, AbstractDungeon.cardRandomRng.random);
+                monsterDrawPile.group = tempList;
+                
+                Hpr.info("使用意图-卡牌转换系统为怪物 " + monster.name + " 生成了 " + generatedCards.size() + " 张卡牌");
+            }
+        }
     }
 
     /**
@@ -262,6 +298,9 @@ public class MonsterCardPlayer {
 
         // 重要：不再在这里抽牌，因为已经在玩家回合开始时抽过了
         // 现在只负责出牌
+        
+        // 更新怪物意图（如果启用了意图-卡牌转换系统）
+        updateMonsterIntentIfNeeded();
 
         // 发送回合开始事件
         sendTurnStartEvent();
@@ -1109,9 +1148,26 @@ public class MonsterCardPlayer {
     }
     
     /**
+     * 设置当前能量
+     */
+    public void setCurrentEnergy(int energy) {
+        setEnergy(energy);
+    }
+    
+    /**
      * 获取怪物手牌（用于额外意图渲染）
      */
     public CardGroup getMonsterHand() {
         return monsterHand;
+    }
+    
+    /**
+     * 更新怪物意图（如果启用了意图-卡牌转换系统）
+     */
+    private void updateMonsterIntentIfNeeded() {
+        IntentToCardIntegration integration = IntentToCardIntegration.getInstance();
+        if (integration.isIntegrationEnabled()) {
+            integration.updateMonsterIntent(monster);
+        }
     }
 }
