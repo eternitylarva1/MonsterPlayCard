@@ -15,6 +15,8 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
 
+import EveryMonsterPlayCard.integration.ActionIntentConfig;
+import EveryMonsterPlayCard.integration.ActionIntentIntegrationPatch;
 import EveryMonsterPlayCard.monstercards.MonsterCardManager;
 import EveryMonsterPlayCard.monstercards.MonsterStartTurnPatch;
 import EveryMonsterPlayCard.monstercards.MonsterTurnEndPatch;
@@ -53,6 +55,12 @@ public class everyMonsterPlayCard implements
         
         // 初始化怪物回合结束补丁，用于处理手牌
         new MonsterTurnEndPatch();
+        
+        // 初始化动作-意图集成补丁
+        new ActionIntentIntegrationPatch();
+        
+        // 初始化动作-意图转换系统配置
+        ActionIntentConfig.initialize();
         
         logger.info("Subscribed to BaseMod events");
     }
