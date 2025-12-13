@@ -1,14 +1,11 @@
 package EveryMonsterPlayCard.ui.BattleUI;
 
-import EveryMonsterPlayCard.ui.BattleUI.CardBox;
-import EveryMonsterPlayCard.ui.BattleUI.CardRecorder;
-import EveryMonsterPlayCard.utils.Hpr;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
-
-import java.util.ArrayList;
 
 //这虽然叫card panel,但时而会同时包括卡牌信息和能量信息
 public class BattleCardPanel {
@@ -61,7 +58,7 @@ public class BattleCardPanel {
     public void updateCardTransparency() {
         if (cardBox != null) {
             int currentEnergy = getCurrentEnergy();
-            cardBox.setCurrentEnergy(currentEnergy);
+            // cardBox.setCurrentEnergy(currentEnergy); // 方法不存在，已移除
             cardBox.updateCardTransparency(currentEnergy);
         }
     }
