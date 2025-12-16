@@ -1,0 +1,17 @@
+package EveryMonsterPlayCard.monstercards.actions;
+
+import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.actions.common.ExhaustSpecificCardAction;
+import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+
+public class MonsterExhaustAllEtherealAction extends AbstractGameAction {
+    public void update() {
+        for (AbstractCard c : AbstractDungeon.player.hand.group) {
+            if (c.isEthereal) {
+                addToTop((AbstractGameAction)new ExhaustSpecificCardAction(c, AbstractDungeon.player.hand));
+            }
+        }
+        this.isDone = true;
+    }
+}
