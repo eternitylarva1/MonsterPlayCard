@@ -32,6 +32,9 @@ public class CardBox {
     
     //关联的MonsterCardPlayer，用于获取能量信息
     MonsterCardPlayer cardPlayer;
+    
+    //当前能量值，用于卡牌透明度计算
+    private int currentEnergy = 0;
 
     public CardBox(float xCenter, float yCenter,
        CardRecorder shownCards,AbstractMonster monster)
@@ -76,6 +79,13 @@ public class CardBox {
      */
     public void setMonsterCardPlayer(MonsterCardPlayer cardPlayer) {
         this.cardPlayer = cardPlayer;
+    }
+    
+    /**
+     * 设置当前能量值
+     */
+    public void setCurrentEnergy(int energy) {
+        this.currentEnergy = energy;
     }
 
     /**
@@ -275,5 +285,6 @@ public class CardBox {
             card.render(sb);
         }
     }
+
 
 }
