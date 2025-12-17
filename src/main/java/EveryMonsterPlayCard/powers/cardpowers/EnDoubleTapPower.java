@@ -64,7 +64,15 @@ public class EnDoubleTapPower extends AbstractPower {
             tmp.purgeOnUse = true;
 
             // 使用怪物的卡牌执行系统
-            tmp.use(AbstractDungeon.player, m);
+            if (tmp instanceof AbstractMonsterCard && this.owner instanceof AbstractMonster) {
+                // 设置拥有者怪物
+                ((AbstractMonsterCard) tmp).setOwningMonster((AbstractMonster)this.owner);
+                // 通过executeMonsterCardAction执行卡牌
+                addToBot(new EveryMonsterPlayCard.monstercards.actions.executeMonsterCardAction(tmp, AbstractDungeon.player, (AbstractMonster)this.owner));
+            } else {
+                // 如果不是怪物卡牌或owner不是怪物，使用原版方式
+                tmp.use(AbstractDungeon.player, m);
+            }
 
             this.amount--;
             if (this.amount == 0) {

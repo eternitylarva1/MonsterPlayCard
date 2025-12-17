@@ -71,6 +71,8 @@ public class executeMonsterCardAction extends AbstractGameAction {
                 monsterCardPlayer.createCardPlayAnimation(this.card);
 
                 // 使用游戏原生的卡牌使用方式，通过Action系统
+                // 注意：AbstractCard.use方法的参数顺序是(AbstractPlayer p, AbstractMonster m)
+                // 这里targetPlayer是玩家，owningMonster是怪物，所以参数顺序是正确的
                 card.use(targetPlayer, owningMonster);
 
                 Hpr.info("怪物 " + owningMonster.name + " 通过Action执行了卡牌: " + card.name);
