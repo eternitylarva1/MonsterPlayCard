@@ -82,7 +82,8 @@ public class EnDoubleTapPower extends AbstractPower {
     }
 
     public void atEndOfTurn(boolean isPlayer) {
-        if (isPlayer)
+        // 如果是怪物回合结束，移除双发power
+        if (!isPlayer)
             addToBot((AbstractGameAction)new RemoveSpecificPowerAction(this.owner, this.owner, "Double Tap"));
     }
 }
