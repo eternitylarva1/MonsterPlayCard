@@ -6,18 +6,7 @@ import java.util.List;
 
 import com.megacrit.cardcrawl.cards.AbstractCard;
 
-import EveryMonsterPlayCard.cards.monster.EnBackstab;
-import EveryMonsterPlayCard.cards.monster.EnBash;
-import EveryMonsterPlayCard.cards.monster.EnBlur;
-import EveryMonsterPlayCard.cards.monster.EnBodySlam;
-import EveryMonsterPlayCard.cards.monster.EnCarnage;
-import EveryMonsterPlayCard.cards.monster.EnCleave;
-import EveryMonsterPlayCard.cards.monster.EnClothesline;
-import EveryMonsterPlayCard.cards.monster.EnDefendRed;
-import EveryMonsterPlayCard.cards.monster.EnDemonForm;
-import EveryMonsterPlayCard.cards.monster.EnDisarm;
-import EveryMonsterPlayCard.cards.monster.EnEntrench;
-import EveryMonsterPlayCard.cards.monster.EnFeed;
+import EveryMonsterPlayCard.cards.monster.*;
 import EveryMonsterPlayCard.utils.Hpr;
 
 /**
@@ -50,43 +39,63 @@ public class MonsterCardConfig {
     private void initializeUniversalCardPool() {
         universalMonsterCards = new ArrayList<>();
 
-        // 添加从崩坠卡牌搬运过来的10张怪物卡牌（简化版本）
+        // 添加从崩坠卡牌搬运过来的所有怪物卡牌
 
-        // 1. EnBash - 红色攻击卡 (2费，8伤害)
+        // 第一批卡牌 (1-13)
         universalMonsterCards.add(new EnBash());
-
-        // 2. EnBodySlam - 红色攻击卡 (1费，基于当前格挡伤害)
         universalMonsterCards.add(new EnBodySlam());
-
-        // 3. EnBackstab - 绿色攻击卡 (0费，11伤害，内在，消耗)
         universalMonsterCards.add(new EnBackstab());
-
-        // 4. EnCarnage - 红色攻击卡 (2费，20伤害，内在)
         universalMonsterCards.add(new EnCarnage());
-
-        // 5. EnCleave - 红色攻击卡 (1费，8伤害，全体)
         universalMonsterCards.add(new EnCleave());
-
-        // 6. EnClothesline - 红色攻击卡 (2费，12伤害+虚弱)
         universalMonsterCards.add(new EnClothesline());
-
-        // 8. EnFeed - 红色攻击卡 (1费，10伤害+回复)
         universalMonsterCards.add(new EnFeed());
-
-        // 9. EnDefendRed - 红色技能卡 (1费，5格挡)
         universalMonsterCards.add(new EnDefendRed());
-
-        // 10. EnBlur - 绿色技能卡 (1费，5格挡)
         universalMonsterCards.add(new EnBlur());
-
-        // 11. EnDisarm - 红色技能卡 (1费，缴械)
         universalMonsterCards.add(new EnDisarm());
-
-        // 12. EnEntrench - 红色技能卡 (2费，格挡翻倍)
         universalMonsterCards.add(new EnEntrench());
-
-        // 13. EnDemonForm - 红色力量卡 (3费，恶魔形态)
         universalMonsterCards.add(new EnDemonForm());
+        universalMonsterCards.add(new EnAnger());
+        universalMonsterCards.add(new EnArmaments());
+        universalMonsterCards.add(new EnBarricade());
+        universalMonsterCards.add(new EnBloodletting());
+
+        // 第二批卡牌 (16-20)
+        universalMonsterCards.add(new EnDoubleTap());
+        universalMonsterCards.add(new EnFlameBarrier());
+        universalMonsterCards.add(new EnInflame());
+        universalMonsterCards.add(new EnReaper());
+        universalMonsterCards.add(new EnUppercut());
+
+        // 第三批卡牌 (21-25)
+        universalMonsterCards.add(new EnFeelNoPain());
+        universalMonsterCards.add(new EnGhostlyArmor());
+        universalMonsterCards.add(new EnHeadbutt());
+        universalMonsterCards.add(new EnHeavyBlade());
+        universalMonsterCards.add(new EnHemokinesis());
+
+        // 第四批卡牌 (26-30)
+        universalMonsterCards.add(new EnImmolate());
+        universalMonsterCards.add(new EnImpervious());
+        universalMonsterCards.add(new EnIntimidate());
+        universalMonsterCards.add(new EnIronWave());
+        universalMonsterCards.add(new EnLimitBreak());
+
+        // 第五批卡牌 (31-35)
+        universalMonsterCards.add(new EnMetallicize());
+        universalMonsterCards.add(new EnPerfectedStrike());
+        universalMonsterCards.add(new EnPowerThrough());
+        universalMonsterCards.add(new EnPummel());
+        universalMonsterCards.add(new EnFlex());
+
+        // 第六批卡牌 (36-40)
+        universalMonsterCards.add(new EnRampage());
+        universalMonsterCards.add(new EnRecklessCharge());
+        universalMonsterCards.add(new EnSecondWind());
+        universalMonsterCards.add(new EnSeeingRed());
+        universalMonsterCards.add(new EnSentinel());
+
+        // 额外卡牌
+        universalMonsterCards.add(new EnWound());
 
         // 清理掉null值，确保只添加有效的卡牌
         universalMonsterCards.removeIf(card -> card == null);
