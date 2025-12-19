@@ -33,6 +33,8 @@ public class EnIronWave extends AbstractMonsterCard {
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
+        calculateCardDamage(m); // 关键修复：计算伤害
+        
         // 获得格挡
         addToBot((AbstractGameAction)new GainBlockAction((AbstractCreature)m, (AbstractCreature)m, this.block));
         // 短暂等待

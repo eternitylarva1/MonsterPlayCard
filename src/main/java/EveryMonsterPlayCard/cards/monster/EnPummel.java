@@ -33,8 +33,10 @@ public class EnPummel extends AbstractMonsterCard {
     
     @Override
     public void use(AbstractPlayer p, AbstractMonster m) {
+        calculateCardDamage(m); // 关键修复：计算伤害
+        
         for (int i = 0; i < this.magicNumber; i++) {
-            addToBot((AbstractGameAction)new DamageAction(p, new DamageInfo(m, this.damage, this.damageTypeForTurn), 
+            addToBot((AbstractGameAction)new DamageAction(p, new DamageInfo(m, this.damage, this.damageTypeForTurn),
                 AbstractGameAction.AttackEffect.BLUNT_HEAVY));
         }
     }

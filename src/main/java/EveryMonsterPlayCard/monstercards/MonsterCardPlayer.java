@@ -451,8 +451,13 @@ public class MonsterCardPlayer {
     private boolean canPlayCard(AbstractCard card, int availableEnergy) {
         // 检查能量是否足够
         int cardCost = Math.max(0, card.cost);
+        
+        // 调试：输出卡牌费用信息
+        Hpr.info("检查卡牌 " + card.name + " 费用: " + card.cost + " -> " + cardCost + ", 可用能量: " + availableEnergy);
+        
         if (cardCost > availableEnergy) {
             // 移除详细日志输出，减少日志污染
+            Hpr.info("怪物 " + monster.name + " 能量不足，无法打出卡牌 " + card.name + "，需要 " + cardCost + "，可用 " + availableEnergy);
             return false;
         }
 
@@ -1113,5 +1118,21 @@ public class MonsterCardPlayer {
      */
     public CardGroup getMonsterHand() {
         return monsterHand;
+    }
+    
+    /**
+     * 添加卡牌到怪物手牌（公共方法）
+     */
+    public void addCardToHand(AbstractCard card) {
+        if (monsterHand != null && card != null) {
+            monsterHand.addToTop(card);
+        }
+    }
+    
+    /**
+     * 刷新显示的卡牌列表（公共方法）
+     */
+    public void refreshDisplayedCardsPublic() {
+        refreshDisplayedCards();
     }
 }

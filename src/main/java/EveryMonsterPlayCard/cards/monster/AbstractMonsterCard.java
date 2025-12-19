@@ -67,12 +67,14 @@ public abstract class AbstractMonsterCard extends AbstractCard {
         if (m != null) {
             float tmp = this.baseDamage;
 
-            // 应用怪物的伤害给予修改
-            for (AbstractPower p : m.powers) {
-                tmp = p.atDamageGive(tmp, this.damageTypeForTurn, this);
+            // 应用拥有此卡牌的怪物的伤害给予修改（修复：使用owningMonster而不是目标怪物m）
+            if (this.owningMonster != null) {
+                for (AbstractPower p : this.owningMonster.powers) {
+                    tmp = p.atDamageGive(tmp, this.damageTypeForTurn, this);
+                }
             }
 
-            // 应用怪物的伤害接收修改
+            // 应用目标（玩家）的伤害接收修改
             for (AbstractPower p : AbstractDungeon.player.powers) {
                 tmp = p.atDamageReceive(tmp, this.damageTypeForTurn, this);
             }

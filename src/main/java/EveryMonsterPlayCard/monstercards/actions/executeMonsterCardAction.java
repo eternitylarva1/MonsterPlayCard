@@ -51,13 +51,12 @@ public class executeMonsterCardAction extends AbstractGameAction {
 
             // 只在第一次update时执行卡牌效果
             if (!cardUsed) {
-                // 触发怪物身上Power的onUseCard钩子（类似原版UseCardAction的构造函数逻辑）
+                // 使用怪物版本的UseCardAction来触发Power钩子
                 if (!card.dontTriggerOnUseCard) {
-                    // 创建一个临时的UseCardAction来触发Power钩子
-                    UseCardAction tempUseCardAction = new UseCardAction(card, targetPlayer);
-                    for (AbstractPower power : owningMonster.powers) {
-                        power.onUseCard(card, tempUseCardAction);
-                    }
+                    // 由于targetPlayer是AbstractPlayer，我们需要传递null作为targetMonster
+                    // MonsterUseCardAction会处理这种情况
+                    MonsterUseCardAction monsterUseCardAction = new MonsterUseCardAction(card, owningMonster, null);
+                    monsterUseCardAction.update(); // 立即执行以触发钩子
                 }
 
                 // 设置卡牌拥有者怪物（如果是怪物卡牌）
@@ -74,6 +73,12 @@ public class executeMonsterCardAction extends AbstractGameAction {
                 // 注意：AbstractCard.use方法的参数顺序是(AbstractPlayer p, AbstractMonster m)
                 // 这里targetPlayer是玩家，owningMonster是怪物，所以参数顺序是正确的
                 card.use(targetPlayer, owningMonster);
+
+                // 修复：如果卡牌需要消耗，使用怪物版本的ExhaustCardAction
+                if (card.exhaust || card.exhaustOnUseOnce) {
+                    MonsterExhaustCardAction monsterExhaustAction = new MonsterExhaustCardAction(card, owningMonster);
+                    monsterExhaustAction.update(); // 立即执行以触发钩子
+                }
 
                 Hpr.info("怪物 " + owningMonster.name + " 通过Action执行了卡牌: " + card.name);
                 cardUsed = true;
